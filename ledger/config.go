@@ -1,12 +1,10 @@
 package ledger
 
-type Config struct {
-	JournalDir string
+type LedgerConfig struct {
+	Journal journal
 }
 
-/*
-var conf Config
-if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
-    // handle error
+type journal struct {
+	Dir         string
+	DefaultPerm int
 }
-*/

@@ -1,2 +1,2 @@
-JournalDir = ./data
-
+Dir = ./data
+DefaultPerm = 777

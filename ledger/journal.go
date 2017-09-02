@@ -38,7 +38,7 @@ func (j *Journal) GetAccounts() []string {
 
 func (j *Journal) AddTransaction(t *Transaction) {
 
-	f, err := os.OpenFile(j.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	f, err := os.OpenFile(j.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666) //TODO: get perm from config
 	if err != nil {
 		panic(err)
 	}
