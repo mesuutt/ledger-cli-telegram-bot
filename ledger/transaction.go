@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"html/template"
 	"log"
+
+	"github.com/shopspring/decimal"
 )
 
 type Transaction struct {
 	FromAccount *Account
 	ToAccount   *Account
-	Date        string
-	Amount      string
+	Date        string //TODO: Should be time.Time
+	Amount      decimal.Decimal
 	Payee       string
 }
 
@@ -28,5 +30,8 @@ func (t *Transaction) String() string {
 
 	buf := new(bytes.Buffer)
 	err = tmpl.Execute(buf, t)
+	if err != nil {
+		panic(err)
+	}
 	return buf.String()
 }

@@ -3,9 +3,11 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mesuutt/ledger/ledger"
+	"github.com/shopspring/decimal"
 )
 
 func AccountListHandler(c *gin.Context) {
@@ -23,16 +25,23 @@ func AddTransactionHandler(c *gin.Context) {
 	user := c.MustGet("user").(ledger.User)
 	j := user.GetJournal()
 
-	var t TransactionPayload
-	c.BindJSON(&t)
+	var payload TransactionPayload
+	c.BindJSON(&payload)
 
-	j.AddTransaction(&ledger.Transaction{
-		FromAccount: &ledger.Account{Name: t.From},
-		ToAccount:   &ledger.Account{Name: t.To},
-		Amount:      t.Amount,
-		Payee:       t.Payee,
-		Date:        t.Date,
-	})
+	amount, _ := decimal.NewFromString(payload.Amount)
+	if payload.Date == "" {
+		payload.Date = time.Now().Format("2006/01/02")
+	}
+
+	transaction := &ledger.Transaction{
+		FromAccount: &ledger.Account{Name: payload.From},
+		ToAccount:   &ledger.Account{Name: payload.To},
+		Amount:      amount,
+		Payee:       payload.Payee,
+		Date:        payload.Date,
+	}
+
+	j.AddTransaction(transaction)
 
 	c.String(http.StatusOK, "")
 }
