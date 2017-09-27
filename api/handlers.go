@@ -10,12 +10,23 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+type AccountList struct {
+	Accounts []string
+	Length   int
+}
+
 func AccountListHandler(c *gin.Context) {
 	// https://golang.org/doc/effective_go.html#interface_conversions
 	// Type switching from interface to struct
 	user := c.MustGet("user").(ledger.User)
 	accounts := user.GetAccounts()
-	json, _ := json.Marshal(accounts)
+	response := &AccountList{
+		Accounts: accounts,
+		Length:   len(accounts),
+	}
+
+	json, _ := json.Marshal(response)
+
 	c.String(http.StatusOK, string(json))
 }
 
