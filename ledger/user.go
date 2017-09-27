@@ -1,6 +1,10 @@
 package ledger
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"path"
+)
 
 type User struct {
 	Username string
@@ -13,5 +17,10 @@ func (user *User) GetAccounts() []string {
 }
 
 func (user *User) GetJournal() Journal {
-	return Journal{Path: fmt.Sprintf("./data/%s.dat", user.Username)}
+	dataDir := os.Getenv("LEDGER_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "./data"
+	}
+
+	return Journal{Path: path.Join(dataDir, fmt.Sprintf("%s.dat", user.Username))}
 }

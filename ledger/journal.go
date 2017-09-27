@@ -13,12 +13,6 @@ type Journal struct {
 	Path     string
 }
 
-// Get ledger file path template
-func (file *Journal) GetPath() string {
-	// TODO: @mesut get data dir path with CLI flags.
-	return "./data/%s.dat"
-}
-
 // Get existing account from ledger file
 func (j *Journal) GetAccounts() []string {
 	utils := Utils{}
