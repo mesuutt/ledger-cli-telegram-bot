@@ -14,11 +14,14 @@ type Transaction struct {
 	Date        string //TODO: Should be time.Time
 	Amount      decimal.Decimal
 	Payee       string
+	Id          int
 }
 
-const transactionTemplate = `{{.Date}} * {{.Payee}}
+const transactionTemplate = `###START:{{.Id}}
+{{.Date}} * {{.Payee}} (##{{.Id}}##)
   {{.ToAccount.Name}}   {{.Amount}}
   {{.FromAccount.Name}}
+###END:{{.Id}}
 `
 
 func (t *Transaction) String() string {
@@ -28,10 +31,12 @@ func (t *Transaction) String() string {
 		log.Fatal("Parse: ", err)
 	}
 
-	buf := new(bytes.Buffer)
-	err = tmpl.Execute(buf, t)
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, t)
+
 	if err != nil {
 		panic(err)
 	}
+
 	return buf.String()
 }
