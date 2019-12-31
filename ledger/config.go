@@ -1,10 +1,8 @@
 package ledger
 
-type LedgerConfig struct {
-	Journal journal
-}
-
-type journal struct {
-	Dir         string
-	DefaultPerm int
+type Config struct {
+	Journal struct {
+		Dir         string
+		DefaultPerm int
+	}
 }

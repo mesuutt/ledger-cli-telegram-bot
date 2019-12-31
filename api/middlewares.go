@@ -1,14 +1,15 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/mesuutt/ledger/ledger"
+	"github.com/labstack/echo"
+
+	"github.com/mesuutt/teledger/ledger"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
 		user := ledger.User{Username: c.Param("username")}
 		c.Set("user", user)
-		c.Next()
+		return next(c)
 	}
 }

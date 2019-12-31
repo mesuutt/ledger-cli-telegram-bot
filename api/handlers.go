@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/mesuutt/ledger/ledger"
+	"github.com/labstack/echo"
 	"github.com/shopspring/decimal"
+
+	"github.com/mesuutt/teledger/ledger"
 )
 
 type AccountList struct {
@@ -15,10 +16,10 @@ type AccountList struct {
 	Length   int
 }
 
-func AccountListHandler(c *gin.Context) {
+func AccountListHandler(c echo.Context) error {
 	// https://golang.org/doc/effective_go.html#interface_conversions
 	// Type switching from interface to struct
-	user := c.MustGet("user").(ledger.User)
+	user := c.Get("user").(ledger.User)
 	accounts := user.GetAccounts()
 	response := &AccountList{
 		Accounts: accounts,
@@ -27,17 +28,17 @@ func AccountListHandler(c *gin.Context) {
 
 	json, _ := json.Marshal(response)
 
-	c.String(http.StatusOK, string(json))
+	return c.String(http.StatusOK, string(json))
 }
 
-func AddTransactionHandler(c *gin.Context) {
+func AddTransactionHandler(c echo.Context) error {
 	// https://golang.org/doc/effective_go.html#interface_conversions
 	// Type switching from interface to struct
-	user := c.MustGet("user").(ledger.User)
+	user := c.Get("user").(ledger.User)
 	j := user.GetJournal()
 
 	var payload TransactionPayload
-	c.BindJSON(&payload)
+	c.Bind(&payload)
 
 	amount, _ := decimal.NewFromString(payload.Amount)
 	if payload.Date == "" {
@@ -54,5 +55,5 @@ func AddTransactionHandler(c *gin.Context) {
 
 	j.AddTransaction(transaction)
 
-	c.String(http.StatusOK, "")
+	return c.String(http.StatusOK, "")
 }
