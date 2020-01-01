@@ -66,7 +66,7 @@ func (j *Journal) getLastTransactionId() int {
 	return i
 }
 
-// Add transaction to ledger file
+// AddTransaction adds given transaction to ledger file
 func (j *Journal) AddTransaction(t *Transaction) {
 
 	f, err := os.OpenFile(j.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666) //TODO: get perm from config
