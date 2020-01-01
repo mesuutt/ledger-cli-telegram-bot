@@ -2,7 +2,7 @@ package bot
 
 const unknownCommandErrMsg = `Unknown command :(
 
-/help
+- /help aliases
 `
 const setAliasHelp = `*Adding New Alias*:
 set alias **AliasName** **AccountName**

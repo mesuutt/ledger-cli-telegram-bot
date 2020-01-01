@@ -22,8 +22,6 @@ func Start(token string) {
 	h := Handler{Bot: b}
 	b.Handle("/alias", h.Alias)
 	b.Handle(tb.OnText, h.Text)
-	b.Handle(&confirmAlias, h.Confirm)
-	b.Handle(&cancelBtn, h.Cancel)
 
 	b.Start()
 }
