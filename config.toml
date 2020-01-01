@@ -1,3 +1,0 @@
-[LedgerCLI.Journal]
-Dir = "./data"
-DefaultPerm = 777

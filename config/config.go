@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"fmt"
@@ -9,14 +9,25 @@ import (
 	"github.com/mesuutt/teledger/ledger"
 )
 
-type config struct {
+type env struct {
 	LedgerCLI ledger.Config
+	Telegram  struct{
+		Token string
+	}
+	Logging   logging
+	DBFile    string
 }
 
+type logging struct {
+	Level  string
+	Format string
+}
 
-func InitConfig(path string) {
-	var conf config
+var (
+	Env env
+)
 
+func Init(path string) {
 	var envPath string
 	if path == "" {
 		if envPath = os.Getenv("TELEDGER_CONFIG_FILE_PATH"); envPath == "" {
@@ -24,11 +35,16 @@ func InitConfig(path string) {
 		}
 	}
 
-	if _, err := toml.DecodeFile(path, &conf); err != nil {
+	if _, err := toml.DecodeFile(path, &Env); err != nil {
 		panic(fmt.Errorf("config file read error : %e", err))
 	}
 
-	if conf.LedgerCLI.Journal.Dir == "" {
+	if Env.LedgerCLI.Journal.Dir == "" {
 		panic("ledger journal dir conf cannot be empty")
 	}
+
+	if Env.DBFile == "" {
+		Env.DBFile = "ledger.db"
+	}
+
 }
