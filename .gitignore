@@ -1,3 +1,6 @@
 docs/
 data/
 .idea/
+
+*.db
+config.toml
