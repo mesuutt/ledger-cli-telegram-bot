@@ -73,7 +73,7 @@ func (j *Journal) getLastTransactionId() int {
 }
 
 // AddTransaction adds given transaction to ledger file
-func (j *Journal) AddTransaction(t *Transaction) {
+func (j *Journal) AddTransaction(t *Transaction) error {
 
 	f, err := os.OpenFile(j.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666) // TODO: get perm from config
 	if err != nil {
@@ -85,9 +85,11 @@ func (j *Journal) AddTransaction(t *Transaction) {
 	// Set transaction Id
 	t.Id = j.getLastTransactionId() + 1
 
-	if _, err = f.WriteString(t.String()); err != nil {
-		panic(err)
+	if _, err = f.WriteString(t.Render()); err != nil {
+		return err
 	}
+
+	return nil
 }
 
 func (j *Journal) DeleteAlias(name string) error {

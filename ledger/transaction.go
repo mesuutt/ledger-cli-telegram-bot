@@ -3,9 +3,9 @@ package ledger
 import (
 	"bytes"
 	"html/template"
-	"log"
 
 	"github.com/shopspring/decimal"
+	"github.com/sirupsen/logrus"
 )
 
 type Transaction struct {
@@ -17,7 +17,12 @@ type Transaction struct {
 	Id          int
 }
 
-const transactionTemplate = `###START:{{.Id}}
+const transactionReadTemplate = `{{.Date}} * {{.Payee}}
+  {{.ToAccount.Name}}   {{.Amount}}
+  {{.FromAccount.Name}}
+`
+
+const transactionWriteTemplate = `###START:{{.Id}}
 {{.Date}} * {{.Payee}} (##{{.Id}}##)
   {{.ToAccount.Name}}   {{.Amount}}
   {{.FromAccount.Name}}
@@ -25,17 +30,37 @@ const transactionTemplate = `###START:{{.Id}}
 `
 
 func (t *Transaction) String() string {
-	tmpl, err := template.New("test").Parse(transactionTemplate)
-
+	tmpl, err := template.New("test").Parse(transactionReadTemplate)
 	if err != nil {
-		log.Fatal("Parse: ", err)
+		logrus.Error("Parse: ", err)
+		return "" // FIXME: return error
 	}
 
 	var buf bytes.Buffer
 	err = tmpl.Execute(&buf, t)
 
 	if err != nil {
-		panic(err)
+		logrus.Error(err)
+		return ""
+	}
+
+	return buf.String()
+}
+
+
+func (t *Transaction) Render() string {
+	tmpl, err := template.New("test").Parse(transactionWriteTemplate)
+	if err != nil {
+		logrus.Error("Parse: ", err)
+		return "" // FIXME: return error
+	}
+
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, t)
+
+	if err != nil {
+		logrus.Error(err)
+		return ""
 	}
 
 	return buf.String()
