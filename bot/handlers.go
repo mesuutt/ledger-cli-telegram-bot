@@ -17,7 +17,7 @@ type Handler struct {
 }
 
 var setAliasRegex = `set alias (?P<name>\w+)\s+(?P<accName>[\w-:]+)$`
-var deleteAliasRegex = `del alias (?P<name>\w+)$`
+var deleteAliasRegex = `(del|delete) alias (?P<name>\w+)$`
 
 func (h *Handler) Alias(m *tb.Message) {
 	if m.Payload == "" {
@@ -98,7 +98,7 @@ func (h *Handler) Text(m *tb.Message) {
 		return
 	}
 
-	if strings.HasPrefix(m.Text, "del alias") {
+	if strings.HasPrefix(m.Text, "del alias") || strings.HasPrefix(m.Text, "delete alias") {
 		match := GetRegexSubMatch(deleteAliasRegex, m.Text)
 		if _, ok := match["name"]; !ok {
 			h.Bot.Send(m.Sender, "Invalid alias name format.\nUsage: "+delAliasHelp)
