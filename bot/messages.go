@@ -15,3 +15,9 @@ const aliasHelp = `
 You can use aliases instead of write account name everytime
 
 ` + setAliasHelp
+
+
+const aliasError = `An error occurred. Please check /help alias`
+const delAliasHelp = `del alias aliasName
+Alias name must contains only [a-zA-Z0-9_]
+`

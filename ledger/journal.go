@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -15,9 +16,7 @@ type Journal struct {
 
 // Get existing account from ledger file
 func (j *Journal) GetAccounts() []string {
-	utils := Utils{}
-
-	out, _ := utils.ExecLedgerCommand(j.Path, "accounts")
+	out, _ := ExecLedgerCommand(j.Path, "accounts")
 	accounts := []string{}
 
 	for {
@@ -82,4 +81,15 @@ func (j *Journal) AddTransaction(t *Transaction) {
 	if _, err = f.WriteString(t.String()); err != nil {
 		panic(err)
 	}
+}
+
+
+func (j *Journal) DeleteAlias(name string) error {
+	matced, _ := regexp.MatchString(`^\w+$`, name)
+	if !matced {
+		return errors.New(`alias name not matched '^\w+$'`)
+	}
+
+	cmd := fmt.Sprintf(`'/###START-ALIAS-%[1]s/,/###END-ALIAS-%[1]s/d'`, name)
+	return ExecSedCommandOnFile(j.Path, cmd)
 }

@@ -5,17 +5,20 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
-
-	"github.com/mesuutt/teledger/ledger"
 )
 
 type env struct {
-	LedgerCLI ledger.Config
-	Telegram  struct{
+	LedgerCLI struct {
+		Journal struct {
+			Dir         string
+			DefaultPerm int
+		}
+	}
+	Telegram struct {
 		Token string
 	}
-	Logging   logging
-	DBFile    string
+	Logging logging
+	DBFile  string
 }
 
 type logging struct {

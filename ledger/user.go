@@ -2,8 +2,9 @@ package ledger
 
 import (
 	"fmt"
-	"os"
 	"path"
+
+	"github.com/mesuutt/teledger/config"
 )
 
 type User struct {
@@ -11,16 +12,20 @@ type User struct {
 	Journal  Journal
 }
 
-func (user *User) GetAccounts() []string {
-	journal := user.GetJournal()
+func (u *User) GetAccounts() []string {
+	journal := u.GetJournal()
 	return journal.GetAccounts()
 }
 
-func (user *User) GetJournal() Journal {
-	dataDir := os.Getenv("LEDGER_DATA_DIR")
-	if dataDir == "" {
-		dataDir = "./data"
-	}
+func (u *User) GetJournal() Journal {
+	return Journal{Path: path.Join(config.Env.LedgerCLI.Journal.Dir, fmt.Sprintf("%s.dat", u.Username))}
+}
 
-	return Journal{Path: path.Join(dataDir, fmt.Sprintf("%s.dat", user.Username))}
+
+
+func (u *User) DeleteAlias(name string) error {
+	j := u.GetJournal()
+	j.DeleteAlias(name)
+
+	return nil
 }

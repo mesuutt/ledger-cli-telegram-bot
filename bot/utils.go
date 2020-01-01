@@ -23,7 +23,7 @@ func GetRegexSubMatch(regex, text string) map[string]string {
 
 
 func IsAliasCommand(text string) bool{
-	expr := regexp.MustCompile(aliasRegex)
+	expr := regexp.MustCompile(setAliasRegex)
 	return expr.Match([]byte(text))
 
 }

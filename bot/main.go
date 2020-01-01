@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -23,5 +24,6 @@ func Start(token string) {
 	b.Handle("/alias", h.Alias)
 	b.Handle(tb.OnText, h.Text)
 
+	logrus.Info("Telegram bot starting")
 	b.Start()
 }
