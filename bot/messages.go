@@ -4,20 +4,14 @@ const unknownCommandErrMsg = `Unknown command :(
 
 /help
 `
-const aliasAddHelp = `*Adding New Alias*:
-/alias add **aliasName** **AccountName**
+const setAliasHelp = `*Adding New Alias*:
+set alias **AliasName** **AccountName**
 
 - Aliases must contains only` + "`" + `[a-zA-Z0-9]` + "`" +
 `
 - Account names must contains only` + "`" + `[a-zA-Z0-9:_-]` + "`"
 
-
 const aliasHelp = `
-You can manage ledger-cli account aliases with /alias command
+You can use aliases instead of write account name everytime
 
-` + aliasAddHelp
-
-const aliasAddErr = `
-*Invalid add systax*
----
-` + aliasAddHelp
+` + setAliasHelp
