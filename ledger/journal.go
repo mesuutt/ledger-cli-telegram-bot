@@ -40,7 +40,7 @@ func (j *Journal) GetAccounts() []string {
 	return accounts
 }
 
-// Get last transaction Id from ledger file
+// Get last transaction ID from ledger file
 func (j *Journal) getLastTransactionId() int {
 	f, err := os.OpenFile(j.Path, os.O_RDONLY, 0666) // TODO: get perm from config
 	if err != nil {
@@ -82,8 +82,8 @@ func (j *Journal) AddTransaction(t *Transaction) error {
 
 	defer f.Close()
 
-	// Set transaction Id
-	t.Id = j.getLastTransactionId() + 1
+	// Set transaction ID
+	t.ID = j.getLastTransactionId() + 1
 
 	if _, err = f.WriteString(t.Render()); err != nil {
 		return err

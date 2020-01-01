@@ -122,7 +122,7 @@ func (h *Handler) Text(m *tb.Message) {
 		_, _ = h.Bot.Send(m.Sender, err.Error())
 	}
 
-	_, _ = h.Bot.Send(m.Sender, "Transaction added")
+	_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Transaction added (ID: %d)", t.ID))
 	_, _ = h.Bot.Send(m.Sender, t.String())
 
 

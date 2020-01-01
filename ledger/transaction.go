@@ -14,19 +14,20 @@ type Transaction struct {
 	Date        string //TODO: Should be time.Time
 	Amount      decimal.Decimal
 	Payee       string
-	Id          int
+	ID          int
 }
 
-const transactionReadTemplate = `{{.Date}} * {{.Payee}}
+const transactionReadTemplate = `
+{{.Date}} * {{.Payee}}
   {{.ToAccount.Name}}   {{.Amount}}
   {{.FromAccount.Name}}
 `
 
-const transactionWriteTemplate = `###START:{{.Id}}
-{{.Date}} * {{.Payee}} (##{{.Id}}##)
+const transactionWriteTemplate = `###START:{{.ID}}
+{{.Date}} * {{.Payee}} (##{{.ID}}##)
   {{.ToAccount.Name}}   {{.Amount}}
   {{.FromAccount.Name}}
-###END:{{.Id}}
+###END:{{.ID}}
 `
 
 func (t *Transaction) String() string {
