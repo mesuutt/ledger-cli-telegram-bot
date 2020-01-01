@@ -20,10 +20,3 @@ func GetRegexSubMatch(regex, text string) map[string]string {
 
 	return result
 }
-
-
-func IsAliasCommand(text string) bool{
-	expr := regexp.MustCompile(setAliasRegex)
-	return expr.Match([]byte(text))
-
-}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -25,6 +26,8 @@ func ExecLedgerCommand(filePath string, cmdList ...string) (bytes.Buffer, bytes.
 func ExecSedCommandOnFile(filePath, command string) error {
 	var stdout, stderr bytes.Buffer
 	sedCmd := fmt.Sprintf("/usr/bin/sed -i %s %s", command, filePath)
+	// replace interpreted NL with raw NL which couse to error when adding new alias
+	sedCmd = strings.Replace(sedCmd, "\n", `\n`, -1)
 	cmd := exec.Command("/usr/bin/bash", "-c", sedCmd)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -36,6 +39,14 @@ func ExecSedCommandOnFile(filePath, command string) error {
 		}).Error("ExecSedCommandOnFile Error")
 		return err
 	}
+
+	return nil
+}
+
+
+func InsertToBeginningOfFile(filePath, text string) error {
+	sedCmd := fmt.Sprintf(`'1s/^/%s/'`, text)
+	ExecSedCommandOnFile(filePath, sedCmd)
 
 	return nil
 }

@@ -29,3 +29,9 @@ func (u *User) DeleteAlias(name string) error {
 
 	return nil
 }
+
+func (u *User) AddAlias(name, accountName string) error {
+	j := u.GetJournal()
+	j.AddAlias(name, accountName)
+	return nil
+}

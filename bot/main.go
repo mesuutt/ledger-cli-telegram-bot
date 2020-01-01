@@ -22,7 +22,10 @@ func Start(token string) {
 
 	h := Handler{Bot: b}
 	b.Handle("/alias", h.Alias)
+	b.Handle("/start", h.Start)
+	b.Handle("/help", h.Help)
 	b.Handle(tb.OnText, h.Text)
+
 
 	logrus.Info("Telegram bot starting")
 	b.Start()

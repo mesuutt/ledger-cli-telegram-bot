@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/mesuutt/teledger/db"
@@ -8,7 +10,16 @@ import (
 )
 
 func SetAlias(senderID int, name, accountName string) error {
+	if db.GetAccountByAlias(senderID, name) != "" {
+		return errors.New(fmt.Sprintf("alias %s already exist.", name))
+	}
+
 	err := db.AddAlias(senderID, name, accountName)
+	if err != nil {
+		return err
+	}
+	user := ledger.User{Username: strconv.Itoa(senderID)}
+	err = user.AddAlias(name, accountName)
 	if err != nil {
 		return err
 	}

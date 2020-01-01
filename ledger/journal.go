@@ -1,8 +1,10 @@
 package ledger
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
 	"os"
 	"regexp"
 	"strconv"
@@ -13,6 +15,11 @@ type Journal struct {
 	Accounts []string
 	Path     string
 }
+
+const aliasTemplate = `###START-ALIAS-{{.Name}}
+alias {{.Name}} = {{.AccountName}}
+###END-ALIAS-{{.Name}}
+`
 
 // Get existing account from ledger file
 func (j *Journal) GetAccounts() []string {
@@ -35,7 +42,7 @@ func (j *Journal) GetAccounts() []string {
 
 // Get last transaction Id from ledger file
 func (j *Journal) getLastTransactionId() int {
-	f, err := os.OpenFile(j.Path, os.O_RDONLY, 0666) //TODO: get perm from config
+	f, err := os.OpenFile(j.Path, os.O_RDONLY, 0666) // TODO: get perm from config
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +75,7 @@ func (j *Journal) getLastTransactionId() int {
 // AddTransaction adds given transaction to ledger file
 func (j *Journal) AddTransaction(t *Transaction) {
 
-	f, err := os.OpenFile(j.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666) //TODO: get perm from config
+	f, err := os.OpenFile(j.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666) // TODO: get perm from config
 	if err != nil {
 		panic(err)
 	}
@@ -83,13 +90,43 @@ func (j *Journal) AddTransaction(t *Transaction) {
 	}
 }
 
-
 func (j *Journal) DeleteAlias(name string) error {
-	matced, _ := regexp.MatchString(`^\w+$`, name)
-	if !matced {
+	m, _ := regexp.MatchString(`^\w+$`, name)
+	if !m {
 		return errors.New(`alias name not matched '^\w+$'`)
 	}
 
 	cmd := fmt.Sprintf(`'/###START-ALIAS-%[1]s/,/###END-ALIAS-%[1]s/d'`, name)
 	return ExecSedCommandOnFile(j.Path, cmd)
+}
+
+func (j *Journal) AddAlias(name, accountName string) error {
+	matced, _ := regexp.MatchString(`^\w+$`, name)
+	accNameMatched, _ := regexp.MatchString(`^[\w:-]+$`, accountName)
+	if !matced || !accNameMatched {
+		return errors.New(`invalid alias name or account name format`)
+	}
+
+	alias  := struct {
+		Name        string
+		AccountName string
+	}{
+		name,
+		accountName,
+	}
+
+	tmpl, err := template.New("addAlias").Parse(aliasTemplate)
+
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, alias)
+
+	if err != nil {
+		return err
+	}
+
+	return InsertToBeginningOfFile(j.Path, buf.String())
 }

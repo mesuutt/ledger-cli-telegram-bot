@@ -29,23 +29,56 @@ func (h *Handler) Alias(m *tb.Message) {
 		}
 	}
 }
+func (h *Handler) Start(m *tb.Message) {
+	if m.Payload == "" {
+		err := db.CreateUser(m.Sender.ID)
+		if err != nil {
+			logrus.Error(err)
+			_, _ = h.Bot.Send(m.Sender, "Start failed")
+		}
+
+		_, err = h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
+			ParseMode: "Markdown",
+		})
+
+		if err != nil {
+			logrus.Error(err)
+		}
+	}
+}
+
+func (h *Handler) Help(m *tb.Message) {
+	if m.Payload == "alias" {
+		_, _ = h.Bot.Send(m.Sender, aliasHelp, &tb.SendOptions{
+			ParseMode: "Markdown",
+		})
+		return
+	}
+
+	_, err := h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
+		ParseMode: "Markdown",
+	})
+	if err != nil {
+		logrus.Error(err)
+	}
+}
 
 func (h *Handler) Text(m *tb.Message) {
-	if IsAliasCommand(m.Text) {
+	if strings.HasPrefix(m.Text, "set alias") {
 		match := GetRegexSubMatch(setAliasRegex, m.Text)
 		err := SetAlias(m.Sender.ID, match["name"], match["accName"])
 		if err != nil {
 			logrus.Error(errors.Wrap(err, "error when set alias: "+m.Text))
-			_, err := h.Bot.Send(m.Sender, aliasError)
+			_, err := h.Bot.Send(m.Sender, fmt.Sprintf("Error: %s", err))
 			if err != nil {
 				logrus.Error(err)
 			}
 			return
 		}
 
-		_, err = h.Bot.Send(m.Sender, "Alias added")
+		_, err = h.Bot.Send(m.Sender, "Alias added.")
 		if err != nil {
-		    logrus.Error(err)
+			logrus.Error(err)
 		}
 
 		return
@@ -55,7 +88,7 @@ func (h *Handler) Text(m *tb.Message) {
 		aliases := db.GetUserAliases(m.Sender.ID)
 		res := new(bytes.Buffer)
 		res.WriteString("Alias = AccountName\n")
-		res.WriteString("===============\n")
+		res.WriteString("=============\n")
 
 		for k, v := range aliases {
 			res.WriteString(fmt.Sprintf("%s = %s\n", k, v))
@@ -68,14 +101,14 @@ func (h *Handler) Text(m *tb.Message) {
 	if strings.HasPrefix(m.Text, "del alias") {
 		match := GetRegexSubMatch(deleteAliasRegex, m.Text)
 		if _, ok := match["name"]; !ok {
-			h.Bot.Send(m.Sender, "Alias name not matched. \nUsage: "+ delAliasHelp)
+			h.Bot.Send(m.Sender, "Invalid alias name format.\nUsage: "+delAliasHelp)
 			return
 		}
 
 		err := DeleteAlias(m.Sender.ID, match["name"])
 		if err != nil {
-			logrus.Error(errors.Wrap(err, "alias delete error: " + m.Text))
-			h.Bot.Send(m.Sender, aliasError)
+			logrus.Error(errors.Wrap(err, "alias delete error: "+m.Text))
+			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Error: %s", err.Error()))
 			return
 		}
 
