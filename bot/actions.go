@@ -45,7 +45,7 @@ func DeleteAlias(senderID int, name string) error {
 	return nil
 }
 
-func AddTransaction(senderID int, text string) (*ledger.Transaction, error) {
+func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 	user := ledger.User{Username: strconv.Itoa(senderID)}
 	j := user.GetJournal()
 
@@ -63,14 +63,23 @@ func AddTransaction(senderID int, text string) (*ledger.Transaction, error) {
 			"u": "7", "i": "8", "o": "9",
 			"p": "0", ".": ".",
 		}
+
 		amountStr := ""
+		/*
+			// we are already checking by regex above.
+			expr := regexp.MustCompile(`^[qwertyuiop.]+$`)
+			m := expr.Match([]byte(match["amount"]))
+			if !m {
+				return nil, errors.New("amount must contains only numbers or [qwertyuiop.]")
+			}*/
+
 		for _, k := range match["amount"] {
 			amountStr += keymap[string(k)]
 		}
 
 		amount, err = decimal.NewFromString(amountStr)
 		if err != nil {
-		    return nil, errors.New("amount parse error: " + err.Error())
+			return nil, errors.New("amount parse error: " + err.Error())
 		}
 	}
 
@@ -81,18 +90,35 @@ func AddTransaction(senderID int, text string) (*ledger.Transaction, error) {
 		match["day"] = time.Now().Format("02")
 	}
 
-	transaction := &ledger.Transaction{
-		FromAccount: &ledger.Account{Name: match["from"]},
-		ToAccount:   &ledger.Account{Name: match["to1"]},
-		Amount:      amount,
-		Payee:       match["payee"],
-		Date:        fmt.Sprintf("%v/%v/%v", time.Now().Year(), match["month"], match["day"]),
+	var transactions []*ledger.Transaction
+	loopCount := 1
+	if match["to2"] != "" {
+		loopCount += 1
 	}
 
-	if err := j.AddTransaction(transaction); err != nil {
-	    return nil, err
+	for i := 0; i < loopCount; i++ {
+		from := match["from"]
+		to := match[fmt.Sprintf("to%d", i + 1)]
+		if i > 0 {
+			from = match[fmt.Sprintf("to%d", i)]
+			// to = match[fmt.Sprintf("to%d", i + 1)] // Next account
+		}
+
+		transaction := &ledger.Transaction{
+			FromAccount: &ledger.Account{Name: from},
+			ToAccount:   &ledger.Account{Name: to},
+			Amount:      amount,
+			Payee:       match["payee"],
+			Date:        fmt.Sprintf("%v/%v/%v", time.Now().Year(), match["month"], match["day"]),
+		}
+
+		if err := j.AddTransaction(transaction); err != nil {
+			return nil, err
+		}
+
+		transactions = append(transactions, transaction)
 	}
 
-	return transaction, nil
+	return transactions, nil
 
 }

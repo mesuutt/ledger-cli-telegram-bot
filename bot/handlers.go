@@ -18,7 +18,7 @@ type Handler struct {
 
 var setAliasRegex = `set alias (?P<name>\w+)\s+(?P<accName>[\w-:]+)$`
 var deleteAliasRegex = `(del|delete) alias (?P<name>\w+)$`
-var transactionRegex = `^((?P<day>\d+)\.(?P<month>\d+)\s+)?(?P<from>\w+),(?P<to1>[\w-:]+)\s+(?P<to2>\,[\w-:]+\s+)?(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
+var transactionRegex = `^((?P<day>\d+)\.(?P<month>\d+)\s+)?(?P<from>\w+),(?P<to1>[\w-:]+)(\,(?P<to2>[\w-:]+)\s+)?(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
 func (h *Handler) Alias(m *tb.Message) {
 	if m.Payload == "" {
@@ -117,13 +117,15 @@ func (h *Handler) Text(m *tb.Message) {
 		return
 	}
 
-	t, err := AddTransaction(m.Sender.ID, m.Text)
+	transactions, err := AddTransaction(m.Sender.ID, m.Text)
 	if err != nil {
 		_, _ = h.Bot.Send(m.Sender, err.Error())
+		return
 	}
 
-	_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Transaction added (ID: %d)", t.ID))
-	_, _ = h.Bot.Send(m.Sender, t.String())
-
+	for i, _ := range transactions {
+		_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Transaction added (ID: %d)", transactions[i].ID))
+		_, _ = h.Bot.Send(m.Sender, transactions[i].String())
+	}
 
 }
