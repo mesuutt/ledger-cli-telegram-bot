@@ -23,16 +23,6 @@ var deleteTransactionRegex = `(del|delete) (?P<id>\d+)$`
 
 var transactionRegex = `^((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+)?)\s+)?(?P<from>\w+),(?P<to1>[\w-:]+)(\,(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
-func (h *Handler) Alias(m *tb.Message) {
-	if m.Payload == "" {
-		_, err := h.Bot.Send(m.Sender, aliasHelp, &tb.SendOptions{
-			ParseMode: "Markdown",
-		})
-		if err != nil {
-			logrus.Error(err)
-		}
-	}
-}
 func (h *Handler) Start(m *tb.Message) {
 	if m.Payload == "" {
 		err := db.CreateUser(m.Sender.ID)
@@ -59,8 +49,8 @@ func (h *Handler) Help(m *tb.Message) {
 		return
 	}
 
-	if m.Payload == "add" {
-		_, _ = h.Bot.Send(m.Sender, addTransactionHelp, &tb.SendOptions{
+	if m.Payload == "transaction" {
+		_, _ = h.Bot.Send(m.Sender, transactionHelp, &tb.SendOptions{
 			ParseMode: "Markdown",
 		})
 		return
@@ -95,7 +85,7 @@ func (h *Handler) Text(m *tb.Message) {
 		return
 	}
 
-	if m.Text == "show aliases" {
+	if m.Text == "a" || m.Text == "alias" || m.Text == "show aliases" {
 		aliases := db.GetUserAliases(m.Sender.ID)
 		res := new(bytes.Buffer)
 		res.WriteString("Alias = AccountName\n")
@@ -103,6 +93,19 @@ func (h *Handler) Text(m *tb.Message) {
 
 		for k, v := range aliases {
 			res.WriteString(fmt.Sprintf("%s = %s\n", k, v))
+		}
+
+		h.Bot.Send(m.Sender, res.String())
+		return
+	}
+
+	if m.Text == "acc" || m.Text == "accounts" || m.Text == "show accounts" {
+		res := new(bytes.Buffer)
+		res.WriteString("AccountName\n")
+		res.WriteString("=============\n")
+
+		for _, v := range GetAccounts(m.Sender.ID) {
+			res.WriteString(fmt.Sprintf("%s\n", v))
 		}
 
 		h.Bot.Send(m.Sender, res.String())

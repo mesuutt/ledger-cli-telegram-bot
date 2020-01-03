@@ -22,6 +22,9 @@ func (u *User) GetJournal() Journal {
 }
 
 
+func (u *User) GetAliases() Journal {
+	return Journal{Path: path.Join(config.Env.LedgerCLI.Journal.Dir, fmt.Sprintf("%s.dat", u.Username))}
+}
 
 func (u *User) DeleteAlias(name string) error {
 	j := u.GetJournal()

@@ -2,7 +2,7 @@ package bot
 
 
 const commands = `
-- /help add
+- /help transaction
 - /help alias
 `
 
@@ -26,8 +26,7 @@ set alias **AliasName** **AccountName**
 - Account names must contains only` + "`" + `[a-zA-Z0-9:_-]` + "`" +
 `
 *Show existing aliases*:
-show aliases
-`
+` + "`a` or `alias` or `show aliases`"
 
 const aliasHelp = `
 You can create aliases and use them as account names instead of writing account names every time when adding transactions.
@@ -37,15 +36,18 @@ const delAliasHelp = `del alias <aliasName>
 Alias name must contains only [a-zA-Z0-9_]
 `
 
-const delTransactionHelp = `del <transactionID>`
+const delTransactionHelp = `
+*Delete transaction*:` + "`" + `
+del <transactionID>` + "`"
+
 const addTransactionHelp = `
 *Adding new transactions*:
 There are multiple ways to add new transaction
 
-1: Simple - OneToOne:
+1: Simple:
 ` +"`" + `<fromAccount>,<toAccount> <amount> <desc>` + "`"+ `
 
-2: Multiple Account - OneToMany:
+2: Multiple Account:
 ` +"`" + `<fromAccount>,<to1>,<to2> <amount> <desc>` + "`"+ `
 
 With this you can add 2 transaction at once, For example:
@@ -56,10 +58,15 @@ So I can add 2 transaction shown as below:
 Also you can write amount using ` + "`"+ `qwertyuiop.` + "`" + ` keys (especially useful if you using mobile phone keyboard)
 ` + "`" + `banka,bankb,alice qwe.rt my debt` + "`" +
 `
+----
+
 If you want to add historical transaction you can add shown as below:
 
 ` +"`" + `<date> <fromAccount>,<toAccount> <amount> <desc>` + "`"+ `
 
-Date format:` +"`" + `dd.MM` + "`"
+Date format:` +"`" + `dd.MM` + "` or "+" `" + `dd.MM.YYYY` + "`"
 
 
+const transactionHelp = addTransactionHelp + `
+
+` + delTransactionHelp

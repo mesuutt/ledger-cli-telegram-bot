@@ -12,6 +12,12 @@ import (
 	"github.com/mesuutt/teledger/ledger"
 )
 
+
+func GetAccounts(senderID int) []string {
+	user := ledger.User{Username: strconv.Itoa(senderID)}
+	return user.GetAccounts()
+}
+
 func SetAlias(senderID int, name, accountName string) error {
 	if db.GetAccountByAlias(senderID, name) != "" {
 		return errors.New(fmt.Sprintf("alias %s already exist.", name))
