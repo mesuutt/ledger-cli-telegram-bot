@@ -23,11 +23,11 @@ const transactionReadTemplate = `
   {{.FromAccount.Name}}
 `
 
-const transactionWriteTemplate = `###START:{{.ID}}
+const transactionWriteTemplate = `###START-TRANS:{{.ID}}
 {{.Date}} * {{.Payee}} (##{{.ID}}##)
   {{.ToAccount.Name}}   {{.Amount}}
   {{.FromAccount.Name}}
-###END:{{.ID}}
+###END-TRANS:{{.ID}}
 `
 
 func (t *Transaction) String() string {

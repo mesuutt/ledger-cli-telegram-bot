@@ -122,3 +122,14 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 	return transactions, nil
 
 }
+
+
+func DeleteTransaction(senderID int, id string) error {
+	user := ledger.User{Username: strconv.Itoa(senderID)}
+	err := user.DeleteTransaction(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

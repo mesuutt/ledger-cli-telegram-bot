@@ -132,3 +132,15 @@ func (j *Journal) AddAlias(name, accountName string) error {
 
 	return InsertToBeginningOfFile(j.Path, buf.String())
 }
+
+
+func (j *Journal) DeleteTransaction(id string) error {
+	m, _ := regexp.MatchString(`^\d+$`, id)
+	if !m {
+		return errors.New(`transaction id not matched '^\d+$'`)
+	}
+
+	cmd := fmt.Sprintf(`'/###START-TRANS:%[1]s/,/###END-TRANS%[1]s/d'`, id)
+	return ExecSedCommandOnFile(j.Path, cmd)
+}
+

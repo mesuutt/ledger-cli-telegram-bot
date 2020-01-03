@@ -35,3 +35,14 @@ func (u *User) AddAlias(name, accountName string) error {
 	j.AddAlias(name, accountName)
 	return nil
 }
+
+
+
+func (u *User) DeleteTransaction(id string) error {
+	j := u.GetJournal()
+	j.DeleteTransaction(id)
+
+	return nil
+}
+
+

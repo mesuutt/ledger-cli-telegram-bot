@@ -3,6 +3,7 @@ package bot
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -18,7 +19,9 @@ type Handler struct {
 
 var setAliasRegex = `set alias (?P<name>\w+)\s+(?P<accName>[\w-:]+)$`
 var deleteAliasRegex = `(del|delete) alias (?P<name>\w+)$`
-var transactionRegex = `^((?P<day>\d+)\.(?P<month>\d+)\s+)?(?P<from>\w+),(?P<to1>[\w-:]+)(\,(?P<to2>[\w-:]+)\s+)?(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
+var deleteTransactionRegex = `(del|delete) (?P<id>\d+)$`
+
+var transactionRegex = `^((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+)?)\s+)?(?P<from>\w+),(?P<to1>[\w-:]+)(\,(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
 func (h *Handler) Alias(m *tb.Message) {
 	if m.Payload == "" {
@@ -51,6 +54,13 @@ func (h *Handler) Start(m *tb.Message) {
 func (h *Handler) Help(m *tb.Message) {
 	if m.Payload == "alias" {
 		_, _ = h.Bot.Send(m.Sender, aliasHelp, &tb.SendOptions{
+			ParseMode: "Markdown",
+		})
+		return
+	}
+
+	if m.Payload == "add" {
+		_, _ = h.Bot.Send(m.Sender, addTransactionHelp, &tb.SendOptions{
 			ParseMode: "Markdown",
 		})
 		return
@@ -117,9 +127,29 @@ func (h *Handler) Text(m *tb.Message) {
 		return
 	}
 
+	if isMatch, err := regexp.Match(deleteTransactionRegex, []byte(m.Text)); isMatch && err == nil {
+		match := GetRegexSubMatch(deleteTransactionRegex, m.Text)
+		if _, ok := match["id"]; !ok {
+			h.Bot.Send(m.Sender, "Invalid delete transaction format.\nUsage: "+delTransactionHelp)
+			return
+		}
+
+		err := DeleteTransaction(m.Sender.ID, match["id"])
+		if err != nil {
+			logrus.Error(errors.Wrap(err, "transaction delete error: "+m.Text))
+			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Error: %s", err.Error()))
+			return
+		}
+
+		h.Bot.Send(m.Sender, "Transaction deleted")
+		return
+	}
+
 	transactions, err := AddTransaction(m.Sender.ID, m.Text)
 	if err != nil {
 		_, _ = h.Bot.Send(m.Sender, err.Error())
+		_, _ = h.Bot.Send(m.Sender, commands)
+
 		return
 	}
 
