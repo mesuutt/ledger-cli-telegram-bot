@@ -12,7 +12,6 @@ import (
 	"github.com/mesuutt/teledger/ledger"
 )
 
-
 func GetAccounts(senderID int) []string {
 	user := ledger.User{Username: strconv.Itoa(senderID)}
 	return user.GetAccounts()
@@ -35,7 +34,6 @@ func SetAlias(senderID int, name, accountName string) error {
 
 	return nil
 }
-
 func DeleteAlias(senderID int, name string) error {
 	user := ledger.User{Username: strconv.Itoa(senderID)}
 	err := user.DeleteAlias(name)
@@ -104,7 +102,7 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 
 	for i := 0; i < loopCount; i++ {
 		from := match["from"]
-		to := match[fmt.Sprintf("to%d", i + 1)]
+		to := match[fmt.Sprintf("to%d", i+1)]
 		if i > 0 {
 			from = match[fmt.Sprintf("to%d", i)]
 			// to = match[fmt.Sprintf("to%d", i + 1)] // Next account
@@ -128,8 +126,6 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 	return transactions, nil
 
 }
-
-
 func DeleteTransaction(senderID int, id string) error {
 	user := ledger.User{Username: strconv.Itoa(senderID)}
 	err := user.DeleteTransaction(id)

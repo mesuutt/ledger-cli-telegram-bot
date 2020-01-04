@@ -45,26 +45,26 @@ const addTransactionHelp = `
 There are multiple ways to add new transaction
 
 1: Simple:
-` +"`" + `<fromAccount>,<toAccount> <amount> <desc>` + "`"+ `
+` +"`<fromAccount>,<toAccount> <amount> <payee>`"+ `
 
 2: Multiple Account:
-` +"`" + `<fromAccount>,<to1>,<to2> <amount> <desc>` + "`"+ `
+` +"`<fromAccount>,<to1>,<to2> <amount> <payee>`"+ `
 
 With this you can add 2 transaction at once, For example:
 I transferred money from A bank to B bank and send the money to my friend from B bank.
 So I can add 2 transaction shown as below:
 `+
-"`" + `banka,bankb,alice 123.45` + "`" + `
-Also you can write amount using ` + "`"+ `qwertyuiop.` + "`" + ` keys (especially useful if you using mobile phone keyboard)
-` + "`" + `banka,bankb,alice qwe.rt my debt` + "`" +
+"`banka,bankb,alice 123.45`" + `
+Also you can write amount using ` + "`qwertyuiop.`" + ` keys (especially useful if you using mobile phone keyboard)
+` + "`banka,bankb,alice qwe.rt my debt`" +
 `
 ----
 
 If you want to add historical transaction you can add shown as below:
 
-` +"`" + `<date> <fromAccount>,<toAccount> <amount> <desc>` + "`"+ `
+` +"`<date> <fromAccount>,<toAccount> <amount> <payee>`"+ `
 
-Date format:` +"`" + `dd.MM` + "` or "+" `" + `dd.MM.YYYY` + "`"
+Date format:` +"`dd.MM` or `dd.MM.YYYY`"
 
 
 const transactionHelp = addTransactionHelp + `

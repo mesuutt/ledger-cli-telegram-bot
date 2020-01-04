@@ -109,7 +109,7 @@ func (j *Journal) AddAlias(name, accountName string) error {
 		return errors.New(`invalid alias name or account name format`)
 	}
 
-	alias  := struct {
+	alias := struct {
 		Name        string
 		AccountName string
 	}{
@@ -132,7 +132,6 @@ func (j *Journal) AddAlias(name, accountName string) error {
 
 	return InsertToBeginningOfFile(j.Path, buf.String())
 }
-
 
 func (j *Journal) DeleteTransaction(id string) error {
 	m, _ := regexp.MatchString(`^\d+$`, id)
