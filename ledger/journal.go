@@ -67,12 +67,10 @@ func (j *Journal) getLastTransactionId() (int, error) {
 		if err != nil {
 			return 0, err
 		}
-		// fmt.Println(n, string(buf))
-		if buf[0] == 10 {
+		if buf[0] == 10 { // if char NL
 			break
 		}
 		i++
-
 	}
 	re := regexp.MustCompile(`###END-TRANS:(\d+)`)
 	match := re.FindStringSubmatch(string(buf))

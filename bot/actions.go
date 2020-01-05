@@ -105,7 +105,6 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 		to := match[fmt.Sprintf("to%d", i+1)]
 		if i > 0 {
 			from = match[fmt.Sprintf("to%d", i)]
-			// to = match[fmt.Sprintf("to%d", i + 1)] // Next account
 		}
 
 		fromAcc := db.GetAccountByAlias(senderID, from)
@@ -130,11 +129,13 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 			Date:        fmt.Sprintf("%v/%v/%v", time.Now().Year(), match["month"], match["day"]),
 		}
 
-		if err := j.AddTransaction(transaction); err != nil {
+		transactions = append(transactions, transaction)
+	}
+
+	for i, _ := range transactions {
+		if err := j.AddTransaction(transactions[i]); err != nil {
 			return nil, err
 		}
-
-		transactions = append(transactions, transaction)
 	}
 
 	return transactions, nil
