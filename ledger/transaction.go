@@ -24,7 +24,7 @@ const transactionReadTemplate = `
 `
 
 const transactionWriteTemplate = `###START-TRANS:{{.ID}}
-{{.Date}} * {{.Payee}} (##{{.ID}}##)
+{{.Date}} * {{.Payee}}
   {{.ToAccount.Name}}   {{.Amount}}
   {{.FromAccount.Name}}
 ###END-TRANS:{{.ID}}
