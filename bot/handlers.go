@@ -28,7 +28,8 @@ func (h *Handler) Start(m *tb.Message) {
 		err := db.CreateUser(m.Sender.ID)
 		if err != nil {
 			logrus.Error(err)
-			_, _ = h.Bot.Send(m.Sender, "Start failed")
+			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Account creation failed: %s", err))
+			return
 		}
 
 		_, err = h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
@@ -65,6 +66,8 @@ func (h *Handler) Help(m *tb.Message) {
 }
 
 func (h *Handler) Text(m *tb.Message) {
+	logrus.Info(m.Text)
+
 	if strings.HasPrefix(m.Text, "set alias") {
 		match := GetRegexSubMatch(setAliasRegex, m.Text)
 		err := SetAlias(m.Sender.ID, match["name"], match["accName"])

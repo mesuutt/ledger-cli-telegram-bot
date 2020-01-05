@@ -14,8 +14,7 @@ func CreateUser(userID int) error {
 		if err != nil {
 			return err
 		}
-		b, err := root.CreateBucket([]byte("aliases"))
-		fmt.Println(b)
+		_, err = root.CreateBucket([]byte("aliases"))
 		return err
 	})
 }
