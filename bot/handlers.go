@@ -17,7 +17,7 @@ type Handler struct {
 	Bot *tb.Bot
 }
 
-var setAliasRegex = `(set alias|a|alias) (?P<name>\w+)\s+(?P<accName>[\w-:]+)$`
+var setAliasRegex = `(set alias|a|alias)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
 var deleteAliasRegex = `(del|delete) alias (?P<name>\w+)$`
 var deleteTransactionRegex = `(del|delete) (?P<id>\d+)$`
 var showAccountBalanceRegex = `(b|bal|balance) (?P<name>[\w-:]+)$`
