@@ -22,7 +22,7 @@ var deleteAliasRegex = `(del|delete) alias (?P<name>\w+)$`
 var deleteTransactionRegex = `(del|delete) (?P<id>\d+)$`
 var showAccountBalanceRegex = `(b|bal|balance) (?P<name>[\w-:]+)$`
 
-var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(?P<to1>[\w-:]+)(\,(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
+var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w-:]+)(\,(\s+)?(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
 func (h *Handler) Start(m *tb.Message) {
 	if m.Payload == "" {
