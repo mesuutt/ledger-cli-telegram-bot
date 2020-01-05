@@ -25,10 +25,10 @@ func ExecLedgerCommand(filePath string, cmdList ...string) (bytes.Buffer, bytes.
 
 func ExecSedCommandOnFile(filePath, command string) error {
 	var stdout, stderr bytes.Buffer
-	sedCmd := fmt.Sprintf("/usr/bin/sed -i %s %s", command, filePath)
+	sedCmd := fmt.Sprintf("sed -i %s %s", command, filePath)
 	// replace interpreted NL with raw NL which couse to error when adding new alias
 	sedCmd = strings.Replace(sedCmd, "\n", `\n`, -1)
-	cmd := exec.Command("/usr/bin/bash", "-c", sedCmd)
+	cmd := exec.Command("bash", "-c", sedCmd)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	err := cmd.Run()
