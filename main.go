@@ -15,6 +15,7 @@ func main() {
 	flag.Parse()
 
 	config.Init(configFilePath)
+	config.InitLogging()
 	db.Init()
 	defer db.Close()
 

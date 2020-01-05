@@ -20,7 +20,6 @@ func Init() {
 	}
 
 	DB = d
-	// defer DB.Close()
 }
 
 func Close() {

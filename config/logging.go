@@ -19,8 +19,7 @@ func InitLogging() {
 		logrus.SetFormatter(&logrus.TextFormatter{})
 	}
 
-
-	// For catching Fatal errors, we are waiting before exist for sending error to sentry successfully.
+	// For catching panic or fatal errors, we are waiting before exist.
 	logrus.RegisterExitHandler(func() {
 		time.Sleep(3 * time.Second)
 	})
