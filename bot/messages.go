@@ -20,6 +20,7 @@ Alias names are case sensitive
 
 *Adding New Alias*:
 set alias **AliasName** **AccountName**
+a **AliasName** **AccountName**
 
 - Aliases must contains only` + "`" + `[a-zA-Z0-9]` + "`" +
 `

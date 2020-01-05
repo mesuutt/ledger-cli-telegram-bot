@@ -17,7 +17,7 @@ type Handler struct {
 	Bot *tb.Bot
 }
 
-var setAliasRegex = `set alias (?P<name>\w+)\s+(?P<accName>[\w-:]+)$`
+var setAliasRegex = `(set alias|a|alias) (?P<name>\w+)\s+(?P<accName>[\w-:]+)$`
 var deleteAliasRegex = `(del|delete) alias (?P<name>\w+)$`
 var deleteTransactionRegex = `(del|delete) (?P<id>\d+)$`
 var showAccountBalanceRegex = `(b|bal|balance) (?P<name>[\w-:]+)$`
@@ -69,7 +69,7 @@ func (h *Handler) Help(m *tb.Message) {
 func (h *Handler) Text(m *tb.Message) {
 	logrus.Info(m.Text)
 
-	if strings.HasPrefix(m.Text, "set alias") {
+	if IsRegexMatch(setAliasRegex, m.Text) {
 		match := GetRegexSubMatch(setAliasRegex, m.Text)
 		err := SetAlias(m.Sender.ID, match["name"], match["accName"])
 		if err != nil {

@@ -4,6 +4,11 @@ import (
 	"regexp"
 )
 
+func IsRegexMatch(expr, text string) bool {
+	m, _ := regexp.Match(expr, []byte(text))
+	return m
+}
+
 func GetRegexSubMatch(regex, text string) map[string]string {
 	expr := regexp.MustCompile(regex)
 	match := expr.FindStringSubmatch(text)
