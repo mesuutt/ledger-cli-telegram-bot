@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"os"
 	"regexp"
 	"strconv"
@@ -41,7 +42,7 @@ func (j *Journal) GetAccounts() []string {
 }
 
 // Get last transaction ID from ledger file
-func (j *Journal) getLastTransactionId() int {
+func (j *Journal) getLastTransactionId() (int, error) {
 	f, err := os.OpenFile(j.Path, os.O_RDONLY, 0666) // TODO: get perm from config
 	if err != nil {
 		panic(err)
@@ -54,22 +55,33 @@ func (j *Journal) getLastTransactionId() int {
 		fmt.Println(err)
 	}
 
-	buf := make([]byte, 10)
-	n, err := f.ReadAt(buf, fi.Size()-int64(len(buf)))
-	if err != nil {
-		fmt.Println(err)
+	buf := make([]byte, 50)
+	i := int64(12) // start from at least 12 because ###END-TRANS: 12 chars.
+	for {
+		n, err := f.Seek(fi.Size()-i, io.SeekEnd)
+		if err != nil {
+			return 0, err
+		}
+
+		_, _ = f.ReadAt(buf, fi.Size()-i)
+		fmt.Println(n, string(buf))
+
+		if buf[0] == 10 {
+			break
+		}
+		i++
+
 	}
-	buf = buf[:n]
-	re := regexp.MustCompile(`###END:(\d+)`)
+	re := regexp.MustCompile(`###END-TRANS:(\d+)`)
 	match := re.FindStringSubmatch(string(buf))
 
 	if len(match) <= 1 {
-		return 0
+		return 0, errors.New("Not matched")
 	}
 
-	i, _ := strconv.Atoi(match[1])
+	id, _ := strconv.Atoi(match[1])
+	return id, nil
 
-	return i
 }
 
 // AddTransaction adds given transaction to ledger file
@@ -83,7 +95,12 @@ func (j *Journal) AddTransaction(t *Transaction) error {
 	defer f.Close()
 
 	// Set transaction ID
-	t.ID = j.getLastTransactionId() + 1
+	lastID, err := j.getLastTransactionId()
+	if err != nil {
+		t.ID = 1
+	} else {
+		t.ID = lastID + 1
+	}
 
 	if _, err = f.WriteString(t.Render()); err != nil {
 		return err
