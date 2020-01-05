@@ -67,7 +67,7 @@ func (h *Handler) Help(m *tb.Message) {
 }
 
 func (h *Handler) Text(m *tb.Message) {
-	logrus.Info(m.Text)
+	logrus.WithField("sender", m.Sender.ID).Info(m.Text)
 
 	if IsRegexMatch(setAliasRegex, m.Text) {
 		match := GetRegexSubMatch(setAliasRegex, m.Text)
