@@ -108,6 +108,20 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 			// to = match[fmt.Sprintf("to%d", i + 1)] // Next account
 		}
 
+		fromAcc := db.GetAccountByAlias(senderID, from)
+		toAcc := db.GetAccountByAlias(senderID, to)
+
+		if fromAcc != "" {
+			from = fromAcc
+		}
+		if toAcc != "" {
+			to = toAcc
+		}
+
+		if from == to {
+			return transactions, errors.New("you cannot use same account in same transaction")
+		}
+
 		transaction := &ledger.Transaction{
 			FromAccount: &ledger.Account{Name: from},
 			ToAccount:   &ledger.Account{Name: to},
