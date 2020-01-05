@@ -58,14 +58,16 @@ func (j *Journal) getLastTransactionId() (int, error) {
 	buf := make([]byte, 50)
 	i := int64(12) // start from at least 12 because ###END-TRANS: 12 chars.
 	for {
-		n, err := f.Seek(fi.Size()-i, io.SeekEnd)
+		_, err := f.Seek(fi.Size()-i, io.SeekEnd)
 		if err != nil {
 			return 0, err
 		}
 
-		_, _ = f.ReadAt(buf, fi.Size()-i)
-		fmt.Println(n, string(buf))
-
+		_, err = f.ReadAt(buf, fi.Size()-i)
+		if err != nil {
+			return 0, err
+		}
+		// fmt.Println(n, string(buf))
 		if buf[0] == 10 {
 			break
 		}
