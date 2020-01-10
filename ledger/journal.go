@@ -55,19 +55,26 @@ func (j *Journal) getLastTransactionId() (int, error) {
 		fmt.Println(err)
 	}
 
-	buf := make([]byte, 50)
-	i := int64(12) // start from at least 12 because ###END-TRANS: 12 chars.
+	var buf []byte
+	i := int64(1)
+	readBuf := make([]byte, i)
 	for {
+		// We are reading 1 byte in each iteration till a new line char
 		_, err := f.Seek(fi.Size()-i, io.SeekEnd)
 		if err != nil {
 			return 0, err
 		}
 
-		_, err = f.ReadAt(buf, fi.Size()-i)
+		_, err = f.ReadAt(readBuf, fi.Size()-i)
 		if err != nil {
 			return 0, err
 		}
-		if buf[0] == 10 { // if char NL
+		if i > 1 && readBuf[0] == 10 { // if char NL
+			buf = make([]byte, i)
+			_, err = f.ReadAt(buf, fi.Size()-i)
+			if err != nil {
+				return 0, err
+			}
 			break
 		}
 		i++
