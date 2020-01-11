@@ -22,12 +22,12 @@ Alias names are case sensitive
 set alias **AliasName** **AccountName**
 a **AliasName** **AccountName**
 
-- Aliases must contains only` + "`" + `[a-zA-Z0-9]` + "`" +
+- Alias names must contains only` + "`" + `[a-zA-Z0-9]` + "`" +
 `
 - Account names must contains only` + "`" + `[a-zA-Z0-9:_-]` + "`" +
 `
 *Show existing aliases*:
-` + "`a` or `alias` or `show aliases`"
+` + "`a`, `A`, `alias` or `show aliases`"
 
 const aliasHelp = `
 You can create aliases and use them as account names instead of writing account names every time when adding transactions.
@@ -37,8 +37,7 @@ const delAliasHelp = `del alias <aliasName>
 Alias name must contains only [a-zA-Z0-9_]
 `
 
-const delTransactionHelp = `
-*Delete transaction*:` + "`" + `
+const delTransactionHelp = `*Delete transaction*:` + "`" + `
 del <transactionID>` + "`"
 
 const addTransactionHelp = `
@@ -52,10 +51,13 @@ There are multiple ways to add new transaction
 ` +"`<fromAccount>,<to1>,<to2> <amount> <payee>`"+ `
 
 With this you can add 2 transaction at once, For example:
-I transferred money from A bank to B bank and send the money to my friend from B bank.
+I transferred money from master card to visa and buy a book from visa.
 So I can add 2 transaction shown as below:
 `+
-"`banka,bankb,alice 123.45`" + `
+"`master,visa,books 123.45`" + `
+
+You can use aliases instead account names.
+
 Also you can write amount using ` + "`qwertyuiop.`" + ` keys (especially useful if you using mobile phone keyboard)
 ` + "`banka,bankb,alice qwe.rt my debt`" +
 `

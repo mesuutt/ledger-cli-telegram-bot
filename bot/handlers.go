@@ -17,10 +17,12 @@ type Handler struct {
 	Bot *tb.Bot
 }
 
-var setAliasRegex = `(set alias|a|alias)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
-var deleteAliasRegex = `(del|delete) alias (?P<name>\w+)$`
-var deleteTransactionRegex = `(del|delete) (?P<id>\d+)$`
-var showAccountBalanceRegex = `(b|bal|balance) (?P<name>[\w-:]+)$`
+var setAliasRegex = `(?i)(a(lias)?)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
+var showAliasRegex = `(?i)(show )?a(lias(es)?)$`
+var showAccountsRegex = `(?i)(show )?acc(ounts?)?$`
+var deleteAliasRegex = `(?i)(del(ete)?) alias (?P<name>\w+)$`
+var deleteTransactionRegex = `(?i)(del(ete)?) (?P<id>\d+)$`
+var showAccountBalanceRegex = `(?i)(b(al(ance)?)?) (?P<name>[\w-:]+)$`
 
 var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w-:]+)(\,(\s+)?(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
@@ -89,7 +91,21 @@ func (h *Handler) Text(m *tb.Message) {
 		return
 	}
 
-	if m.Text == "a" || m.Text == "alias" || m.Text == "show aliases" {
+	if IsRegexMatch(showAccountBalanceRegex, m.Text) {
+		match := GetRegexSubMatch(showAccountBalanceRegex, m.Text)
+		bal := GetAccountBalance(m.Sender.ID, match["name"])
+		// res := new(bytes.Buffer)
+
+		/*for k, v := range aliases {
+			res.WriteString(fmt.Sprintf("%s = %s\n", k, v))
+		}
+
+		h.Bot.Send(m.Sender, res.String())*/
+		h.Bot.Send(m.Sender, bal)
+		return
+	}
+
+	if IsRegexMatch(showAliasRegex, m.Text) {
 		aliases := db.GetUserAliases(m.Sender.ID)
 		res := new(bytes.Buffer)
 		res.WriteString("Alias = AccountName\n")
@@ -103,7 +119,7 @@ func (h *Handler) Text(m *tb.Message) {
 		return
 	}
 
-	if m.Text == "acc" || m.Text == "accounts" || m.Text == "show accounts" {
+	if IsRegexMatch(showAccountsRegex, m.Text) {
 		res := new(bytes.Buffer)
 		res.WriteString("AccountName\n")
 		res.WriteString("=============\n")
