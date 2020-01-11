@@ -21,7 +21,7 @@ var setAliasRegex = `(?i)(a(lias)?)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
 var showAliasRegex = `(?i)(show )?a(lias(es)?)$`
 var showAccountsRegex = `(?i)(show )?acc(ounts?)?$`
 var deleteAliasRegex = `(?i)(del(ete)?) alias (?P<name>\w+)$`
-var deleteTransactionRegex = `(?i)(del(ete)?) (?P<id>\d+)$`
+var deleteTransactionRegex = `(?i)(d(el(ete)?)?) (?P<id>\d+)$`
 var showAccountBalanceRegex = `(?i)(b(al(ance)?)?) (?P<name>[\w-:]+)$`
 
 var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w-:]+)(\,(\s+)?(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
@@ -152,11 +152,6 @@ func (h *Handler) Text(m *tb.Message) {
 
 	if isMatch, err := regexp.Match(deleteTransactionRegex, []byte(m.Text)); isMatch && err == nil {
 		match := GetRegexSubMatch(deleteTransactionRegex, m.Text)
-		if _, ok := match["id"]; !ok {
-			h.Bot.Send(m.Sender, "Invalid delete transaction format.\nUsage: "+delTransactionHelp)
-			return
-		}
-
 		err := DeleteTransaction(m.Sender.ID, match["id"])
 		if err != nil {
 			logrus.Error(errors.Wrap(err, "transaction delete error: "+m.Text))
