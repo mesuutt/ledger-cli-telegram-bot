@@ -37,4 +37,8 @@ func (u *User) DeleteTransaction(id string) error {
 	return j.DeleteTransaction(id)
 }
 
+func (u *User) GetAccountBalance(accountName string) string {
+	j := u.GetJournal()
+	return j.GetAccountBalance(accountName)
+}
 

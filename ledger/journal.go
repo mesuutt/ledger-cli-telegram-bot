@@ -167,3 +167,22 @@ func (j *Journal) DeleteTransaction(id string) error {
 	return ExecSedCommandOnFile(j.Path, cmd)
 }
 
+// Get account balance
+func (j *Journal) GetAccountBalance(name string) string {
+	out, _ := ExecLedgerCommand(j.Path, fmt.Sprintf("balance '%s'", name))
+	// accounts := []string{}
+
+	/*for {
+		line, err := out.ReadString('\n')
+		if err != nil {
+			break
+		}
+
+		// fmt.Printf("LINE: %v", line)
+		accounts = append(accounts, strings.TrimRight(line, "\n"))
+	}*/
+
+	// fmt.Printf("%v", out)
+	// return accounts
+	return out.String()
+}
