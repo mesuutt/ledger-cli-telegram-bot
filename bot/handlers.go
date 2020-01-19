@@ -17,12 +17,12 @@ type Handler struct {
 	Bot *tb.Bot
 }
 
-var setAliasRegex = `(?i)(a(lias)?)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
-var showAliasRegex = `(?i)(show )?a(lias(es)?)$`
-var showAccountsRegex = `(?i)(show )?acc(ounts?)?$`
-var deleteAliasRegex = `(?i)(del(ete)?) alias (?P<name>\w+)$`
-var deleteTransactionRegex = `(?i)(d(el(ete)?)?) (?P<id>\d+)$`
-var showAccountBalanceRegex = `(?i)(b(al(ance)?)?) (?P<name>[\w-:]+)$`
+var setAliasRegex = `^(?i)(a(lias)?)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
+var showAliasRegex = `^(?i)(show )?a(lias(es)?)$`
+var showAccountsRegex = `^(?i)(show )?acc(ounts?)?$`
+var deleteAliasRegex = `^(?i)(del(ete)?) alias (?P<name>\w+)$`
+var deleteTransactionRegex = `^(?i)(d(el(ete)?)?) (?P<id>\d+)$`
+var showAccountBalanceRegex = `^(?i)(b(al(ance)?)?) (?P<name>[\w-:]+)$`
 
 var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w-:]+)(\,(\s+)?(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
