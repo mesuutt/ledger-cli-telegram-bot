@@ -18,7 +18,7 @@ type Handler struct {
 }
 
 var setAliasRegex = `^(?i)(a(lias)?)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
-var showAliasRegex = `^(?i)(show )?a(lias(es)?)$`
+var showAliasRegex = `^(?i)(show )?a(lias(es)?)?$`
 var showAccountsRegex = `^(?i)(show )?acc(ounts?)?$`
 var deleteAliasRegex = `^(?i)(del(ete)?) alias (?P<name>\w+)$`
 var deleteTransactionRegex = `^(?i)(d(el(ete)?)?) (?P<id>\d+)$`
