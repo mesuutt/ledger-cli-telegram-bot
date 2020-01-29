@@ -22,7 +22,7 @@ var showAliasRegex = `^(?i)(show )?a(lias(es)?)?$`
 var showAccountsRegex = `^(?i)(show )?acc(ounts?)?$`
 var deleteAliasRegex = `^(?i)(del(ete)?) alias (?P<name>\w+)$`
 var deleteTransactionRegex = `^(?i)(d(el(ete)?)?) (?P<id>\d+)$`
-var showAccountBalanceRegex = `^(?i)(b(al(ance)?)?) (?P<name>[\w-:]+)$`
+var showAccountBalanceRegex = `^(?i)(b(al(ance)?)?)(\s+(?P<name>[\w-:]+))?$`
 
 var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w-:]+)(\,(\s+)?(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
@@ -93,14 +93,14 @@ func (h *Handler) Text(m *tb.Message) {
 
 	if IsRegexMatch(showAccountBalanceRegex, m.Text) {
 		match := GetRegexSubMatch(showAccountBalanceRegex, m.Text)
-		bal := GetAccountBalance(m.Sender.ID, match["name"])
-		// res := new(bytes.Buffer)
 
-		/*for k, v := range aliases {
-			res.WriteString(fmt.Sprintf("%s = %s\n", k, v))
+		// Use original account name if alias exist with given name
+		accountName := db.GetAccountByAlias(m.Sender.ID, match["name"])
+		if accountName == "" {
+			accountName = match["name"]
 		}
+		bal := GetAccountBalance(m.Sender.ID, accountName)
 
-		h.Bot.Send(m.Sender, res.String())*/
 		h.Bot.Send(m.Sender, bal)
 		return
 	}

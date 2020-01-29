@@ -24,8 +24,12 @@ alias {{.Name}} = {{.AccountName}}
 
 // Get existing account from ledger file
 func (j *Journal) GetAccounts() []string {
-	out, _ := ExecLedgerCommand(j.Path, "accounts")
+	out, err := ExecLedgerCommand(j.Path, "accounts")
 	accounts := []string{}
+
+	if err != nil {
+		return accounts
+	}
 
 	for {
 		line, err := out.ReadString('\n')
@@ -167,22 +171,17 @@ func (j *Journal) DeleteTransaction(id string) error {
 	return ExecSedCommandOnFile(j.Path, cmd)
 }
 
-// Get account balance
+// Get balance of given account. If name is empty getting balances of all accounts
 func (j *Journal) GetAccountBalance(name string) string {
-	out, _ := ExecLedgerCommand(j.Path, fmt.Sprintf("balance '%s'", name))
-	// accounts := []string{}
+	out, err := ExecLedgerCommand(j.Path, fmt.Sprintf("balance --flat %s", name))
+	if err != nil {
+		return "an error occurred"
+	}
 
-	/*for {
-		line, err := out.ReadString('\n')
-		if err != nil {
-			break
-		}
+	output := out.String()
+	if output != "" {
+		return output
+	}
 
-		// fmt.Printf("LINE: %v", line)
-		accounts = append(accounts, strings.TrimRight(line, "\n"))
-	}*/
-
-	// fmt.Printf("%v", out)
-	// return accounts
-	return out.String()
+	return "ledger command output is empty"
 }

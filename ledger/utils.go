@@ -9,17 +9,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ExecLedgerCommand(filePath string, cmdList ...string) (bytes.Buffer, bytes.Buffer) {
-	var outb, errb bytes.Buffer
+func ExecLedgerCommand(filePath string, cmdList ...string) (bytes.Buffer, error) {
+	var stdout, stderr bytes.Buffer
 
 	// NOTE: @mesut restrict executed command with ledger filePath
-	args := append([]string{"-f", filePath}, cmdList...)
+	args := append([]string{"ledger", "-f", filePath}, cmdList...)
 
-	cmd := exec.Command("ledger", args...)
-	cmd.Stdout = &outb
-	cmd.Stderr = &errb
-	cmd.Run()
-	return outb, errb
+	cmd := exec.Command("bash", "-c", strings.Join(args, " "))
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		logrus.WithError(err).WithFields(logrus.Fields{
+			"cmd":    cmd.String(),
+			"stderr": stderr.String(),
+		}).Error("ExecLedgerCommand Error")
+		return stdout, err
+	}
+	return stdout, nil
 
 }
 
@@ -47,6 +54,5 @@ func ExecSedCommandOnFile(filePath, command string) error {
 func InsertToBeginningOfFile(filePath, text string) error {
 	sedCmd := fmt.Sprintf(`'1s/^/%s/'`, text)
 	ExecSedCommandOnFile(filePath, sedCmd)
-
 	return nil
 }
