@@ -4,6 +4,7 @@ package bot
 const commands = `
 - /help transaction
 - /help alias
+- /help balance
 `
 
 const startMsgFormat = `Hi %s
@@ -73,3 +74,8 @@ Date format:` +"`dd.MM` or `dd.MM.YYYY`"
 const transactionHelp = addTransactionHelp + `
 
 ` + delTransactionHelp
+
+
+const balanceHelp = `
+You can show account balance with` + "`balance accountName` command." +
+` You can use` + " `b` or `bal` instead `balance`. If you don't give any account name balances of all accounts will be shown."

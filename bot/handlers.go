@@ -60,6 +60,13 @@ func (h *Handler) Help(m *tb.Message) {
 		return
 	}
 
+	if m.Payload == "balance" {
+		_, _ = h.Bot.Send(m.Sender, balanceHelp, &tb.SendOptions{
+			ParseMode: "Markdown",
+		})
+		return
+	}
+
 	_, err := h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
 		ParseMode: "Markdown",
 	})
@@ -100,7 +107,6 @@ func (h *Handler) Text(m *tb.Message) {
 			accountName = match["name"]
 		}
 		bal := GetAccountBalance(m.Sender.ID, accountName)
-
 		h.Bot.Send(m.Sender, bal)
 		return
 	}

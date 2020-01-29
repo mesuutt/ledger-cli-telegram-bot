@@ -153,5 +153,6 @@ func DeleteTransaction(senderID int, id string) error {
 
 func GetAccountBalance(senderID int, name string) string {
 	user := ledger.User{Username: strconv.Itoa(senderID)}
+
 	return user.GetAccountBalance(name)
 }
