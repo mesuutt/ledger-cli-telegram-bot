@@ -182,4 +182,15 @@ func (h *Handler) Text(m *tb.Message) {
 		_, _ = h.Bot.Send(m.Sender, transactions[i].String())
 	}
 
+	buf := new(bytes.Buffer)
+	buf.Write([]byte("New Balances\n"))
+	buf.Write([]byte("===========\n"))
+	for i, _ := range transactions {
+		bal := GetAccountBalance(m.Sender.ID, transactions[i].FromAccount.Name)
+		buf.Write([]byte(bal + "\n"))
+		bal = GetAccountBalance(m.Sender.ID, transactions[i].ToAccount.Name)
+		buf.Write([]byte(bal + "\n"))
+	}
+	_, _ = h.Bot.Send(m.Sender, buf.String())
+
 }

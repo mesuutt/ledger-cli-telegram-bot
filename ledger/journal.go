@@ -179,6 +179,12 @@ func (j *Journal) GetAccountBalance(name string) string {
 	}
 
 	output := out.String()
+	if name != "" {
+		// If account name given, clean new lines
+		output = strings.Replace(output, "\n", "", -1)
+		output = strings.Trim(output, " ")
+	}
+
 	if output != "" {
 		return output
 	}
