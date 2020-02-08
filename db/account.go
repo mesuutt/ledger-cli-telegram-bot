@@ -2,6 +2,8 @@ package db
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 
 	// "github.com/boltdb/bolt"
 
@@ -28,8 +30,8 @@ func GetAccountByAlias(userID int, name string) string {
 	var account string
 
 	DB.View(func(tx *bolt.Tx) error {
-		 account = string(getUserAliasBucket(tx, userID).Get([]byte(name)))
-		 return nil
+		account = string(getUserAliasBucket(tx, userID).Get([]byte(name)))
+		return nil
 	})
 
 	return account
@@ -49,14 +51,26 @@ func GetUserAliases(userID int) map[string]string {
 		b := getUserAliasBucket(tx, userID)
 		c := b.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {
-			fmt.Printf("key=%s, value=%s\n", k, v)
+			// fmt.Printf("key=%s, value=%s\n", k, v)
 			aliases[string(k)] = string(v)
 		}
 
 		return nil
 	})
 
-	return aliases
+	keys := make([]string, 0, len(aliases))
+	for k := range aliases {
+		keys = append(keys, k)
+	}
+
+	// Sort by case insensitive alias names
+	sort.Slice(keys, func(i, j int) bool { return strings.ToLower(keys[i]) < strings.ToLower(keys[j]) })
+	sorted := make(map[string]string)
+	for _, k := range keys {
+		sorted[k] = aliases[k]
+	}
+
+	return sorted
 }
 
 func DeleteAlias(userID int, name string) error {
