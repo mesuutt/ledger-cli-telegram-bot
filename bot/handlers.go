@@ -117,8 +117,8 @@ func (h *Handler) Text(m *tb.Message) {
 		res.WriteString("Alias = AccountName\n")
 		res.WriteString("=============\n")
 
-		for k, v := range aliases {
-			res.WriteString(fmt.Sprintf("%s = %s\n", k, v))
+		for i, _ := range aliases {
+			res.WriteString(fmt.Sprintf("%s = %s\n", aliases[i][0], aliases[i][1]))
 		}
 
 		h.Bot.Send(m.Sender, res.String())

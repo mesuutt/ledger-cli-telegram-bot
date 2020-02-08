@@ -44,7 +44,7 @@ func AddAlias(userID int, alias, account string) error {
 	})
 }
 
-func GetUserAliases(userID int) map[string]string {
+func GetUserAliases(userID int) [][]string {
 	aliases := make(map[string]string)
 
 	DB.View(func(tx *bolt.Tx) error {
@@ -64,10 +64,11 @@ func GetUserAliases(userID int) map[string]string {
 	}
 
 	// Sort by case insensitive alias names
+	// Maps is not ordered, so we are creating nested string array
 	sort.Slice(keys, func(i, j int) bool { return strings.ToLower(keys[i]) < strings.ToLower(keys[j]) })
-	sorted := make(map[string]string)
+	sorted := [][]string{}
 	for _, k := range keys {
-		sorted[k] = aliases[k]
+		sorted = append(sorted, []string{k, aliases[k]})
 	}
 
 	return sorted
