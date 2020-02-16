@@ -69,13 +69,6 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 		}
 
 		amountStr := ""
-		/*
-			// we are already checking by regex above.
-			expr := regexp.MustCompile(`^[qwertyuiop.]+$`)
-			m := expr.Match([]byte(match["amount"]))
-			if !m {
-				return nil, errors.New("amount must contains only numbers or [qwertyuiop.]")
-			}*/
 
 		for _, k := range match["amount"] {
 			amountStr += keymap[string(k)]
