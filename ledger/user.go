@@ -17,7 +17,7 @@ func (u *User) GetAccounts() []string {
 	return journal.GetAccounts()
 }
 func (u *User) GetJournal() Journal {
-	return Journal{Path: path.Join(config.Env.LedgerCLI.Journal.Dir, fmt.Sprintf("%s.dat", u.Username))}
+	return Journal{Path: path.Join(config.Env.LedgerCLI.JournalDir, fmt.Sprintf("%s.dat", u.Username))}
 }
 
 func (u *User) DeleteAlias(name string) error {

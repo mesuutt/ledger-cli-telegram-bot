@@ -3,7 +3,6 @@ module github.com/mesuutt/teledger
 go 1.13
 
 require (
-	github.com/BurntSushi/toml v0.3.1
 	github.com/boltdb/bolt v1.3.1
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/pkg/errors v0.8.1

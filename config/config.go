@@ -4,21 +4,18 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/BurntSushi/toml"
+	"github.com/sirupsen/logrus"
 )
 
 type env struct {
+	DBFile    string
 	LedgerCLI struct {
-		Journal struct {
-			Dir         string
-			DefaultPerm int
-		}
+		JournalDir string
 	}
 	Telegram struct {
 		Token string
 	}
 	Logging logging
-	DBFile  string
 }
 
 type logging struct {
@@ -30,23 +27,24 @@ var (
 	Env env
 )
 
-func Init(path string) {
-	var envPath string
-	if path == "" {
-		if envPath = os.Getenv("TELEDGER_CONFIG_FILE_PATH"); envPath == "" {
-			panic("config file path must be gived with flag or TELEDGER_CONFIG_FILE_PATH env var")
-		}
+func Init() {
+	Env.LedgerCLI.JournalDir = os.Getenv("TELEDGER_JOURNAL_DIR")
+	if Env.LedgerCLI.JournalDir == "" {
+		logrus.Fatal("TELEDGER_JOURNAL_DIR env var cannot be empty")
 	}
 
-	if _, err := toml.DecodeFile(path, &Env); err != nil {
-		panic(fmt.Errorf("config file read error : %e", err))
+	if _, err := os.Stat(Env.LedgerCLI.JournalDir); os.IsNotExist(err) {
+		logrus.Fatal(fmt.Sprintf("Ensure journal directory exist and writable: %s", Env.LedgerCLI.JournalDir))
 	}
 
-	if Env.LedgerCLI.Journal.Dir == "" {
-		panic("ledger journal dir conf cannot be empty")
+	Env.Telegram.Token = os.Getenv("TELEDGER_TELEGRAM_TOKEN")
+	if Env.Telegram.Token == "" {
+		logrus.Fatal("TELEDGER_TELEGRAM_TOKEN env cannot be empty")
 	}
 
+	Env.DBFile = os.Getenv("TELEDGER_DB_FILE")
 	if Env.DBFile == "" {
+		logrus.Info("TELEDGER_DB_FILE env not set. `ledger.db` will be used.")
 		Env.DBFile = "ledger.db"
 	}
 
