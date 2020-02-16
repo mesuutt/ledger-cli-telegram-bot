@@ -1,3 +1,7 @@
+#### Teledger
+
+----
+
 [Ledger-cli](https://www.ledger-cli.org/) is a powerful, double-entry accounting system that is accessed from the UNIX command. 
 ledger-cli keeps account transactions in a simple text file and it is easy to use, fast and more powerful.
 
@@ -31,5 +35,3 @@ TELEDGER_TELEGRAM_TOKEN=
 TELEDGER_JOURNAL_DIR=
 ```
 - Send messages to the bot.
-
-#### Adding transactions
