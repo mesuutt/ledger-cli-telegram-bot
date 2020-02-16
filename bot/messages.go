@@ -2,14 +2,14 @@ package bot
 
 
 const commands = `
-- /help transaction
-- /help alias
-- /help balance
+- help transaction
+- help alias
+- help balance
 `
 
 const startMsgFormat = `Hi %s
 I am a ledger-cli bot.
-You can learn how to use me with:
+You can learn usage from [project page](https://github.com/mesuutt/telegder/README.md) or send one of following commands to me:
 `  + commands
 
 const unknownCommandErrMsg = `Unknown command :(

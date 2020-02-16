@@ -17,6 +17,7 @@ type Handler struct {
 	Bot *tb.Bot
 }
 
+var helpRegex = `^(?i)(h(elp)?)(\s+(?P<name>\w+))?$`
 var setAliasRegex = `^(?i)(a(lias)?)\s+(?P<name>\w+)+[\s=]+(?P<accName>[\w-:]+)$`
 var showAliasRegex = `^(?i)(show )?a(lias(es)?)?$`
 var showAccountsRegex = `^(?i)(show )?acc(ounts?)?$`
@@ -26,57 +27,32 @@ var showAccountBalanceRegex = `^(?i)(b(al(ance)?)?)(\s+(?P<name>[\w-:]+))?$`
 
 var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w-:]+)(\,(\s+)?(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
-func (h *Handler) Start(m *tb.Message) {
-	if m.Payload == "" {
-		err := db.CreateUser(m.Sender.ID)
-		if err != nil {
-			logrus.Error(err)
-			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Account creation failed: %s", err))
-			return
-		}
-
-		_, err = h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
-			ParseMode: "Markdown",
-		})
-
-		if err != nil {
-			logrus.Error(err)
-		}
-	}
-}
-
-func (h *Handler) Help(m *tb.Message) {
-	if m.Payload == "alias" {
-		_, _ = h.Bot.Send(m.Sender, aliasHelp, &tb.SendOptions{
-			ParseMode: "Markdown",
-		})
-		return
-	}
-
-	if m.Payload == "transaction" {
-		_, _ = h.Bot.Send(m.Sender, transactionHelp, &tb.SendOptions{
-			ParseMode: "Markdown",
-		})
-		return
-	}
-
-	if m.Payload == "balance" {
-		_, _ = h.Bot.Send(m.Sender, balanceHelp, &tb.SendOptions{
-			ParseMode: "Markdown",
-		})
-		return
-	}
-
-	_, err := h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
-		ParseMode: "Markdown",
-	})
-	if err != nil {
-		logrus.Error(err)
-	}
-}
-
 func (h *Handler) Text(m *tb.Message) {
 	logrus.WithField("sender", m.Sender.ID).Info(m.Text)
+
+	if IsRegexMatch(helpRegex, m.Text) {
+		match := GetRegexSubMatch(helpRegex, m.Text)
+		switch v := match["name"]; v {
+		case "alias":
+			_, _ = h.Bot.Send(m.Sender, aliasHelp, &tb.SendOptions{
+				ParseMode: "Markdown",
+			})
+		case "transaction":
+			_, _ = h.Bot.Send(m.Sender, transactionHelp, &tb.SendOptions{
+				ParseMode: "Markdown",
+			})
+		case "balance":
+			_, _ = h.Bot.Send(m.Sender, balanceHelp, &tb.SendOptions{
+				ParseMode: "Markdown",
+			})
+		default:
+			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
+				ParseMode: "Markdown",
+			})
+		}
+
+		return
+	}
 
 	if IsRegexMatch(setAliasRegex, m.Text) {
 		match := GetRegexSubMatch(setAliasRegex, m.Text)
@@ -193,4 +169,24 @@ func (h *Handler) Text(m *tb.Message) {
 	}
 	_, _ = h.Bot.Send(m.Sender, buf.String())
 
+}
+
+
+func (h *Handler) Start(m *tb.Message) {
+	if m.Payload == "" {
+		err := db.CreateUser(m.Sender.ID)
+		if err != nil {
+			logrus.Error(err)
+			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Account creation failed: %s", err))
+			return
+		}
+
+		_, err = h.Bot.Send(m.Sender, fmt.Sprintf(startMsgFormat, m.Sender.Username), &tb.SendOptions{
+			ParseMode: "Markdown",
+		})
+
+		if err != nil {
+			logrus.Error(err)
+		}
+	}
 }
