@@ -19,16 +19,24 @@ func CreateUser(userID int) error {
 	})
 }
 
-func getUserAliasBucket(tx *bolt.Tx, userID int) *bolt.Bucket {
+func getUserAliasBucket(tx *bolt.Tx, userID int) (*bolt.Bucket, error) {
 	userB := tx.Bucket([]byte(fmt.Sprintf("u_%d", userID)))
-	return userB.Bucket([]byte("aliases"))
+	if userB == nil {
+		return nil, &ErrBudgetNotFound{}
+	}
+	return userB.Bucket([]byte("aliases")), nil
 }
 
 func GetAccountByAlias(userID int, name string) string {
 	var account string
 
 	DB.View(func(tx *bolt.Tx) error {
-		account = string(getUserAliasBucket(tx, userID).Get([]byte(name)))
+		b, err := getUserAliasBucket(tx, userID)
+		if err != nil {
+		    return err
+		}
+
+		account = string(b.Get([]byte(name)))
 		return nil
 	})
 
@@ -37,16 +45,24 @@ func GetAccountByAlias(userID int, name string) string {
 
 func AddAlias(userID int, alias, account string) error {
 	return DB.Update(func(tx *bolt.Tx) error {
-		b := getUserAliasBucket(tx, userID)
+		b, err := getUserAliasBucket(tx, userID)
+		if err != nil {
+		    return err
+		}
+
 		return b.Put([]byte(alias), []byte(account))
 	})
 }
 
-func GetUserAliases(userID int) [][]string {
+func GetUserAliases(userID int) ([][]string, error) {
 	aliases := make(map[string]string)
 
-	DB.View(func(tx *bolt.Tx) error {
-		b := getUserAliasBucket(tx, userID)
+	err := DB.View(func(tx *bolt.Tx) error {
+		b, err := getUserAliasBucket(tx, userID)
+		if err != nil {
+		    return err
+		}
+
 		c := b.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			// fmt.Printf("key=%s, value=%s\n", k, v)
@@ -55,6 +71,10 @@ func GetUserAliases(userID int) [][]string {
 
 		return nil
 	})
+
+	if err != nil {
+	    return nil, err
+	}
 
 	keys := make([]string, 0, len(aliases))
 	for k := range aliases {
@@ -69,12 +89,15 @@ func GetUserAliases(userID int) [][]string {
 		sorted = append(sorted, []string{k, aliases[k]})
 	}
 
-	return sorted
+	return sorted, nil
 }
 
 func DeleteAlias(userID int, name string) error {
 	return DB.Update(func(tx *bolt.Tx) error {
-		b := getUserAliasBucket(tx, userID)
+		b, err := getUserAliasBucket(tx, userID)
+		if err != nil {
+		    return err
+		}
 		return b.Delete([]byte(name))
 	})
 }

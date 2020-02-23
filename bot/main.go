@@ -21,7 +21,7 @@ func Start(token string) {
 	}
 
 	h := Handler{Bot: b}
-	// b.Handle("/start", h.Start)
+	b.Handle("/start", h.Start)
 	// b.Handle("/help", h.Help)
 	b.Handle(tb.OnText, h.Text)
 

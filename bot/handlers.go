@@ -2,11 +2,11 @@ package bot
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	tb "gopkg.in/tucnak/telebot.v2"
 
@@ -58,7 +58,7 @@ func (h *Handler) Text(m *tb.Message) {
 		match := GetRegexSubMatch(setAliasRegex, m.Text)
 		err := SetAlias(m.Sender.ID, match["name"], match["accName"])
 		if err != nil {
-			logrus.Error(errors.Wrap(err, "error when set alias: "+m.Text))
+			logrus.Error(fmt.Errorf("error when set alias: %s, %w", m.Text, err))
 			_, err := h.Bot.Send(m.Sender, fmt.Sprintf("Error: %s", err))
 			if err != nil {
 				logrus.Error(err)
@@ -88,7 +88,19 @@ func (h *Handler) Text(m *tb.Message) {
 	}
 
 	if IsRegexMatch(showAliasRegex, m.Text) {
-		aliases := db.GetUserAliases(m.Sender.ID)
+		aliases, err := db.GetUserAliases(m.Sender.ID)
+		if err != nil {
+			if errors.Is(err, &db.ErrBudgetNotFound{}) {
+				h.Bot.Send(m.Sender, "budget not found. Please send /start command for create missing budget")
+			}
+			return
+		}
+
+		if len(aliases) == 0 {
+			h.Bot.Send(m.Sender, "No alias found")
+			return
+		}
+
 		res := new(bytes.Buffer)
 		res.WriteString("Alias = AccountName\n")
 		res.WriteString("=============\n")
@@ -102,11 +114,17 @@ func (h *Handler) Text(m *tb.Message) {
 	}
 
 	if IsRegexMatch(showAccountsRegex, m.Text) {
+		accounts := GetAccounts(m.Sender.ID)
+		if len(accounts) == 0 {
+			h.Bot.Send(m.Sender, "No account found")
+			return
+		}
+
 		res := new(bytes.Buffer)
 		res.WriteString("AccountName\n")
 		res.WriteString("=============\n")
 
-		for _, v := range GetAccounts(m.Sender.ID) {
+		for _, v := range accounts {
 			res.WriteString(fmt.Sprintf("%s\n", v))
 		}
 
@@ -123,7 +141,7 @@ func (h *Handler) Text(m *tb.Message) {
 
 		err := DeleteAlias(m.Sender.ID, match["name"])
 		if err != nil {
-			logrus.Error(errors.Wrap(err, "alias delete error: "+m.Text))
+			logrus.Error(fmt.Errorf("alias delete error: %s, %w", m.Text, err))
 			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Error: %s", err.Error()))
 			return
 		}
@@ -136,7 +154,7 @@ func (h *Handler) Text(m *tb.Message) {
 		match := GetRegexSubMatch(deleteTransactionRegex, m.Text)
 		err := DeleteTransaction(m.Sender.ID, match["id"])
 		if err != nil {
-			logrus.Error(errors.Wrap(err, "transaction delete error: "+m.Text))
+			logrus.Error(fmt.Errorf("transaction delete error: %s, %w", m.Text, err))
 			_, _ = h.Bot.Send(m.Sender, fmt.Sprintf("Error: %s", err.Error()))
 			return
 		}
@@ -170,7 +188,6 @@ func (h *Handler) Text(m *tb.Message) {
 	_, _ = h.Bot.Send(m.Sender, buf.String())
 
 }
-
 
 func (h *Handler) Start(m *tb.Message) {
 	if m.Payload == "" {
