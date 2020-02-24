@@ -24,14 +24,16 @@ The final goal is to easily do all the works that can be done with ledger-cli.
 - [ ] Daily expense reminder
 
 
-#### Running Teledger
+#### Running Teledger locally
 
 - Create a telegram bot with [BotFather](http://t.me/BotFather) and get token of created bot.
 - Set required environment variables
+
 ```
 TELEDGER_TELEGRAM_TOKEN=
 TELEDGER_JOURNAL_DIR=
 ```
+- `go run .` 
 
 ----
 
