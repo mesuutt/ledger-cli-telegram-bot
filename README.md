@@ -7,7 +7,6 @@ ledger-cli keeps account transactions in a simple text file and it is easy to us
 
 I am using ledger-cli since 2016 and I love it a lot. 
 
-I am using ledger-cli since 2016 and I love it a lot.
 I have been spending money mostly when I am outside. I used to keep costs by writing them to a note-keeping app on a mobile phone. 
 Writing expenses from mobile and rewriting them to ledger-cli journal file a little hard and time-consuming work. So I wrote the teledger bot which you can use it to create and report ledger-cli transactions easily.
 
