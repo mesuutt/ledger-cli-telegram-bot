@@ -7,13 +7,11 @@ ledger-cli keeps account transactions in a simple text file and it is easy to us
 
 I am using ledger-cli since 2016 and I love it a lot. 
 
-I have been spending money mostly when I am outside. I used to keep expenses with writing them to a note keeping app on mobile phone.
-Writing expenses from mobile phone and rewriting them to ledger-cli journal file little hard and time consuming work.
-So I wrote the teledger bot which you can use it for create and report ledger-cli transactions easily. 
+I am using ledger-cli since 2016 and I love it a lot.
+I have been spending money mostly when I am outside. I used to keep costs by writing them to a note-keeping app on a mobile phone. 
+Writing expenses from mobile and rewriting them to ledger-cli journal file a little hard and time-consuming work. So I wrote the teledger bot which you can use it to create and report ledger-cli transactions easily.
 
-Main goal of teledger is writing ledger-cli transactions with easy special syntax.
-and final goal is to easily do all the work can be done with ledger-cli with easily with the bot.
-
+The final goal is to easily do all the works that can be done with ledger-cli.
 
 #### Future List
 
@@ -77,7 +75,7 @@ Adding new alias syntax is simple:
 
 ```A AliasName AccountNake```
 
-Alias names adding to journal files also account names will be written to journal file instead alias names when you add new transaction.   
+Alias names adding to journal files also account names will be written to journal file instead alias names when you add a new transaction.   
 
 ![](https://user-images.githubusercontent.com/823338/75117181-457f6180-5680-11ea-9207-a287350433df.jpeg)
 
@@ -95,3 +93,10 @@ B [aliasName|accountName]
 ```
 
 ![](https://user-images.githubusercontent.com/823338/75117510-14ecf700-5683-11ea-971b-40324d2d9c5b.jpeg)
+
+
+----
+
+#### License
+
+MIT
