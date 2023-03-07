@@ -8,7 +8,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-func CreateUser(userID int) error {
+func CreateUser(userID int64) error {
 	return DB.Update(func(tx *bolt.Tx) error {
 		root, err := tx.CreateBucket([]byte(fmt.Sprintf("u_%d", userID)))
 		if err != nil {
@@ -19,7 +19,7 @@ func CreateUser(userID int) error {
 	})
 }
 
-func getUserAliasBucket(tx *bolt.Tx, userID int) (*bolt.Bucket, error) {
+func getUserAliasBucket(tx *bolt.Tx, userID int64) (*bolt.Bucket, error) {
 	userB := tx.Bucket([]byte(fmt.Sprintf("u_%d", userID)))
 	if userB == nil {
 		return nil, &ErrBudgetNotFound{}
@@ -27,13 +27,13 @@ func getUserAliasBucket(tx *bolt.Tx, userID int) (*bolt.Bucket, error) {
 	return userB.Bucket([]byte("aliases")), nil
 }
 
-func GetAccountByAlias(userID int, name string) string {
+func GetAccountByAlias(userID int64, name string) string {
 	var account string
 
 	DB.View(func(tx *bolt.Tx) error {
 		b, err := getUserAliasBucket(tx, userID)
 		if err != nil {
-		    return err
+			return err
 		}
 
 		account = string(b.Get([]byte(name)))
@@ -43,24 +43,24 @@ func GetAccountByAlias(userID int, name string) string {
 	return account
 }
 
-func AddAlias(userID int, alias, account string) error {
+func AddAlias(userID int64, alias, account string) error {
 	return DB.Update(func(tx *bolt.Tx) error {
 		b, err := getUserAliasBucket(tx, userID)
 		if err != nil {
-		    return err
+			return err
 		}
 
 		return b.Put([]byte(alias), []byte(account))
 	})
 }
 
-func GetUserAliases(userID int) ([][]string, error) {
+func GetUserAliases(userID int64) ([][]string, error) {
 	aliases := make(map[string]string)
 
 	err := DB.View(func(tx *bolt.Tx) error {
 		b, err := getUserAliasBucket(tx, userID)
 		if err != nil {
-		    return err
+			return err
 		}
 
 		c := b.Cursor()
@@ -73,7 +73,7 @@ func GetUserAliases(userID int) ([][]string, error) {
 	})
 
 	if err != nil {
-	    return nil, err
+		return nil, err
 	}
 
 	keys := make([]string, 0, len(aliases))
@@ -92,11 +92,11 @@ func GetUserAliases(userID int) ([][]string, error) {
 	return sorted, nil
 }
 
-func DeleteAlias(userID int, name string) error {
+func DeleteAlias(userID int64, name string) error {
 	return DB.Update(func(tx *bolt.Tx) error {
 		b, err := getUserAliasBucket(tx, userID)
 		if err != nil {
-		    return err
+			return err
 		}
 		return b.Delete([]byte(name))
 	})

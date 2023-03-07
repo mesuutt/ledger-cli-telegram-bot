@@ -12,12 +12,12 @@ import (
 	"github.com/mesuutt/teledger/ledger"
 )
 
-func GetAccounts(senderID int) []string {
-	user := ledger.User{Username: strconv.Itoa(senderID)}
+func GetAccounts(senderID int64) []string {
+	user := ledger.User{Username: strconv.Itoa(int(senderID))}
 	return user.GetAccounts()
 }
 
-func SetAlias(senderID int, name, accountName string) error {
+func SetAlias(senderID int64, name, accountName string) error {
 	if db.GetAccountByAlias(senderID, name) != "" {
 		return errors.New(fmt.Sprintf("alias %s already exist.", name))
 	}
@@ -26,7 +26,7 @@ func SetAlias(senderID int, name, accountName string) error {
 	if err != nil {
 		return err
 	}
-	user := ledger.User{Username: strconv.Itoa(senderID)}
+	user := ledger.User{Username: strconv.Itoa(int(senderID))}
 	err = user.AddAlias(name, accountName)
 	if err != nil {
 		return err
@@ -34,8 +34,8 @@ func SetAlias(senderID int, name, accountName string) error {
 
 	return nil
 }
-func DeleteAlias(senderID int, name string) error {
-	user := ledger.User{Username: strconv.Itoa(senderID)}
+func DeleteAlias(senderID int64, name string) error {
+	user := ledger.User{Username: strconv.Itoa(int(senderID))}
 	err := user.DeleteAlias(name)
 	if err != nil {
 		return err
@@ -49,8 +49,8 @@ func DeleteAlias(senderID int, name string) error {
 	return nil
 }
 
-func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
-	user := ledger.User{Username: strconv.Itoa(senderID)}
+func AddTransaction(senderID int64, text string) ([]*ledger.Transaction, error) {
+	user := ledger.User{Username: strconv.Itoa(int(senderID))}
 	j := user.GetJournal()
 
 	match := GetRegexSubMatch(transactionRegex, text)
@@ -134,8 +134,8 @@ func AddTransaction(senderID int, text string) ([]*ledger.Transaction, error) {
 	return transactions, nil
 
 }
-func DeleteTransaction(senderID int, id string) error {
-	user := ledger.User{Username: strconv.Itoa(senderID)}
+func DeleteTransaction(senderID int64, id string) error {
+	user := ledger.User{Username: strconv.Itoa(int(senderID))}
 	err := user.DeleteTransaction(id)
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func DeleteTransaction(senderID int, id string) error {
 	return nil
 }
 
-func GetAccountBalance(senderID int, name string) string {
-	user := ledger.User{Username: strconv.Itoa(senderID)}
+func GetAccountBalance(senderID int64, name string) string {
+	user := ledger.User{Username: strconv.Itoa(int(senderID))}
 	return user.GetAccountBalance(name)
 }
