@@ -49,7 +49,7 @@ func DeleteAlias(senderID int64, name string) error {
 	return nil
 }
 
-func AddTransaction(senderID int64, text string) ([]*ledger.Transaction, error) {
+func AddTransaction(senderID int64, text string, msgTime time.Time) ([]*ledger.Transaction, error) {
 	user := ledger.User{Username: strconv.Itoa(int(senderID))}
 	j := user.GetJournal()
 
@@ -80,11 +80,13 @@ func AddTransaction(senderID int64, text string) ([]*ledger.Transaction, error) 
 		}
 	}
 
-	if match["month"] == "" {
-		match["month"] = time.Now().Format("01")
-	}
-	if match["day"] == "" {
-		match["day"] = time.Now().Format("02")
+	if match["date"] == "" {
+		match["day"] = msgTime.Format("02")
+		match["month"] = msgTime.Format("01")
+
+		if match["year"] == "" {
+			match["year"] = msgTime.Format("2006")
+		}
 	}
 
 	var transactions []*ledger.Transaction
@@ -119,7 +121,7 @@ func AddTransaction(senderID int64, text string) ([]*ledger.Transaction, error) 
 			ToAccount:   &ledger.Account{Name: to},
 			Amount:      amount,
 			Payee:       match["payee"],
-			Date:        fmt.Sprintf("%v/%v/%v", time.Now().Year(), match["month"], match["day"]),
+			Date:        fmt.Sprintf("%v/%v/%v", match["year"], match["month"], match["day"]),
 		}
 
 		transactions = append(transactions, transaction)

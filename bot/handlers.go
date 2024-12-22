@@ -25,7 +25,7 @@ var deleteAliasRegex = `^(?i)(del(ete)?) alias (?P<name>\w+)$`
 var deleteTransactionRegex = `^(?i)(d(el(ete)?)?) (?P<id>\d+)$`
 var showAccountBalanceRegex = `^(?i)(b(al(ance)?)?)(\s+(?P<name>[\w-:]+))?$`
 
-var transactionRegex = `^(((?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w-:]+)(\,(\s+)?(?P<to2>[\w-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
+var transactionRegex = `^((?P<date>(?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?)\s+)?(?P<from>[\w:]+),(\s+)?(?P<to1>[\w\-:]+)(\,(\s+)?(?P<to2>[\w\-:]+))?\s+(?P<amount>[\dwqertyuiop.]+)(\s+(?P<payee>.*))?$`
 
 func (h *Handler) Text(m *tb.Message) {
 	logrus.WithField("sender", m.Sender.ID).Info(m.Text)
@@ -163,7 +163,7 @@ func (h *Handler) Text(m *tb.Message) {
 		return
 	}
 
-	transactions, err := AddTransaction(m.Sender.ID, m.Text)
+	transactions, err := AddTransaction(m.Sender.ID, m.Text, m.Time())
 	if err != nil {
 		_, _ = h.Bot.Send(m.Sender, err.Error())
 		_, _ = h.Bot.Send(m.Sender, commands)
